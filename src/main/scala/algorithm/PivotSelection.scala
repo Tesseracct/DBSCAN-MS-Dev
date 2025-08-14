@@ -7,7 +7,7 @@ import scala.util.Random
 
 case object PivotSelection {
   // Hull Foci Algorithm to find pivot candidates
-  def HF(dataset: Array[DataPoint],
+  private[algorithm] def HF(dataset: Array[DataPoint],
          numberOfPivotCandidates: Int,
          distanceFunction: (Array[Float], Array[Float]) => Float,
          seed: Int): Array[DataPoint] = {
@@ -57,7 +57,7 @@ case object PivotSelection {
     pivotCandidates
   }
 
-  def findFarthestPoint(dataset: Array[DataPoint],
+  private[algorithm] def findFarthestPoint(dataset: Array[DataPoint],
                                 referencePoint: DataPoint,
                                 distanceFunction: (Array[Float], Array[Float]) => Float): DataPoint = {
 
@@ -85,8 +85,20 @@ case object PivotSelection {
     require(numberOfPivots >= 2, "Number of pivots must be at least 2")
     require(numberOfPivots <= dataset.length, "Number of pivots must not exceed dataset size")
 
-    val pivotCandidates = HF(dataset, numberOfPivots, distanceFunction, seed)
+    val candidates = HF(dataset, numberOfPivots, distanceFunction, seed)
+    val pivots = new Array[DataPoint](numberOfPivots)
+
+    for (i <- 0 until numberOfPivots) {
+      for (candidate <- candidates if !pivots.contains(candidate)) {
+
+      }
+    }
 
 
+  }
+
+  private[algorithm] def newPivotPrecision(points: Array[DataPoint]): Float = {
+    require(points.nonEmpty, "Points array must not be empty")
+    Float.NaN
   }
 }
