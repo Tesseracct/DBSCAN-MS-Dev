@@ -1,6 +1,6 @@
 package algorithm
 
-import model.DataPointVector
+import model.DataPoint
 import org.scalatest.funsuite.AnyFunSuite
 
 import scala.util.Random
@@ -12,31 +12,31 @@ class PivotSelectionTest() extends AnyFunSuite {
   test("Test findFarthestPoint") {
     val seed = 42
     val rng = new Random(seed)
-    val dataset: Array[DataPointVector] = Array.fill(50)(DataPointVector(Array(rng.nextFloat(), rng.nextFloat(), rng.nextFloat()), id = 0))
+    val dataset: Array[DataPoint] = Array.fill(50)(DataPoint(Array(rng.nextFloat(), rng.nextFloat(), rng.nextFloat()), id = 0))
 
     val startingPoint = dataset(rng.nextInt(dataset.length))
     val farthestPoint = findFarthestPoint(dataset, startingPoint, euclidean)
 
     dataset.foreach { point =>
-      assert(euclidean(startingPoint.coordinates, farthestPoint.coordinates) >= euclidean(startingPoint.coordinates, point.coordinates),
-        s"Farthest point ${farthestPoint.coordinates.mkString(",")} is not actually the farthest from ${startingPoint.coordinates.mkString(",")}")
+      assert(euclidean(startingPoint.data, farthestPoint.data) >= euclidean(startingPoint.data, point.data),
+        s"Farthest point ${farthestPoint.data.mkString(",")} is not actually the farthest from ${startingPoint.data.mkString(",")}")
     }
   }
 
 
-  private def recalcErrors(pivots: Array[DataPointVector]): Array[Float] = {
-    val edge = euclidean(pivots(0).coordinates, pivots(1).coordinates)
-    pivots.zipWithIndex.drop(2).map { case (a: DataPointVector, i: Int) =>
-      pivots.take(i).map(b => Math.abs(edge - euclidean(a.coordinates, b.coordinates))).sum
+  private def recalcErrors(pivots: Array[DataPoint]): Array[Float] = {
+    val edge = euclidean(pivots(0).data, pivots(1).data)
+    pivots.zipWithIndex.drop(2).map { case (a: DataPoint, i: Int) =>
+      pivots.take(i).map(b => Math.abs(edge - euclidean(a.data, b.data))).sum
     }
   }
 
   test("Basic HF functionality test in 2D") {
     val seed = 42
     val rng = new Random(seed)
-    val dataset: Array[DataPointVector] = Array.fill(20)(DataPointVector(Array.fill(2)(rng.nextFloat()), id = 0))
+    val dataset: Array[DataPoint] = Array.fill(20)(DataPoint(Array.fill(2)(rng.nextFloat()), id = 0))
 
-    val result: Array[DataPointVector] = HF(dataset, 4, euclidean, seed)
+    val result: Array[DataPoint] = HF(dataset, 4, euclidean, seed)
 //    println(result.map(_.coordinates.mkString("Datapoint(", ", ", ")")).mkString("Array(", ", ", ")"))
 
     /*
@@ -55,9 +55,9 @@ class PivotSelectionTest() extends AnyFunSuite {
   test("HF test in 20D") {
     val seed = 42
     val rng = new Random(seed)
-    val dataset: Array[DataPointVector] = Array.fill(10000)(DataPointVector(Array.fill(20)(rng.nextFloat()), id = 0))
+    val dataset: Array[DataPoint] = Array.fill(10000)(DataPoint(Array.fill(20)(rng.nextFloat()), id = 0))
 
-    val result: Array[DataPointVector] = HF(dataset, 20, euclidean, seed)
+    val result: Array[DataPoint] = HF(dataset, 20, euclidean, seed)
     val errors = recalcErrors(result)
     assert(errors sameElements errors.sorted)
   }
