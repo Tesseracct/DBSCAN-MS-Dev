@@ -2,6 +2,7 @@ package algorithm
 
 import model.{DataPoint, DataPointVector}
 import utils.Distance.euclidean
+import utils.MapPointToVectorSpace
 
 import scala.util.Random
 
@@ -125,7 +126,7 @@ case object PivotSelection {
    */
   private[algorithm] def newPivotSetPrecision(objectPairs: Array[(DataPoint, DataPoint)], pivots: List[DataPoint]): Float = {
     objectPairs.map { case (a, b) =>
-      L_infNorm(mapPointToVectorSpace(a, pivots), mapPointToVectorSpace(b, pivots)) / a.distance(b, euclidean)
+      L_infNorm(MapPointToVectorSpace(a, pivots), MapPointToVectorSpace(b, pivots)) / a.distance(b, euclidean)
     }.sum / objectPairs.length
   }
 
@@ -137,7 +138,7 @@ case object PivotSelection {
    * @param b Second data point.
    * @return The L-infinity norm between the two data points.
    */
-  private def L_infNorm(a: Array[Float], b: Array[Float]): Float = {
+  private def L_infNorm(a: List[Float], b: List[Float]): Float = {
     require(a.length == b.length, "Data points must have the same dimension")
 //    a.data.zip(b.data).map { case (x, y) => Math.abs(x - y) }.max
 
@@ -151,15 +152,5 @@ case object PivotSelection {
     maxDiff
   }
 
-  /**
-   * Maps a data point to a vector space defined by the given pivots.
-   *
-   * (This is ϕ(o) in "Efficient Metric Indexing for Similarity Search")
-   * @param point The data point to map.
-   * @param pivots The pivots defining the vector space.
-   * @return The coordinates of the data point in the vector space.
-   */
-  private def mapPointToVectorSpace(point: DataPoint, pivots: List[DataPoint]): Array[Float] = {
-    pivots.map(pivot => pivot.distance(point, euclidean)).toArray
-  }
+
 }

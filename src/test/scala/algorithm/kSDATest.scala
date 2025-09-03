@@ -1,6 +1,6 @@
 package algorithm
 
-import model.DataPointVector
+import model.DataPoint
 import org.scalatest.funsuite.AnyFunSuite
 
 import scala.util.Random
@@ -9,19 +9,19 @@ class kSDATest extends AnyFunSuite {
 
   test("kSDA.divideSpace returns correct number of partitions") {
     val dataset = (1 to 1000).map { _ =>
-      DataPointVector(Array(Random.nextFloat(), Random.nextFloat()), 0)
+      DataPoint(Array(Random.nextFloat(), Random.nextFloat()), 0)
     }.toArray
 
-    val partitions = kSDA.divideSpace(dataset, 8)
+    val partitions = kSDA.divideSpace(dataset, null, 8)
     assert(partitions.length == 8)
   }
 
   test("Each partition bounding box contains only valid coordinates") {
     val dataset = (1 to 500).map { _ =>
-      DataPointVector(Array(Random.between(-100f, 100f), Random.between(-50f, 50f)), 0)
+      DataPoint(Array(Random.between(-100f, 100f), Random.between(-50f, 50f)), 0)
     }.toArray
 
-    val partitions = kSDA.divideSpace(dataset, 5)
+    val partitions = kSDA.divideSpace(dataset, null, 5)
 
     for ((minCoords, maxCoords) <- partitions) {
       assert(minCoords.length == 2)
@@ -34,12 +34,12 @@ class kSDATest extends AnyFunSuite {
 
   test("Partitioning with 1 partition returns full bounding box") {
     val dataset = Array(
-      DataPointVector(Array(0f, 0f), 0),
-      DataPointVector(Array(1f, 1f), 1),
-      DataPointVector(Array(2f, 3f), 2)
+      DataPoint(Array(0f, 0f), 0),
+      DataPoint(Array(1f, 1f), 1),
+      DataPoint(Array(2f, 3f), 2)
     )
 
-    val partitions = kSDA.divideSpace(dataset, 1)
+    val partitions = kSDA.divideSpace(dataset, null, 1)
     assert(partitions.length == 1)
     val (minCoords, maxCoords) = partitions(0)
     assert(minCoords.sameElements(Array(0f, 0f)))
@@ -47,22 +47,22 @@ class kSDATest extends AnyFunSuite {
   }
 
   test("Partitioning single data point returns one partition with min == max") {
-    val dp = DataPointVector(Array(1.5f, -2.3f), 0)
-    val partitions = kSDA.divideSpace(Array(dp), 1)
+    val dp = DataPoint(Array(1.5f, -2.3f), 0)
+    val partitions = kSDA.divideSpace(Array(dp), null, 1)
     val (minCoords, maxCoords) = partitions(0)
-    assert(minCoords.sameElements(dp.coordinates))
-    assert(maxCoords.sameElements(dp.coordinates))
+    assert(minCoords.sameElements(dp.data))
+    assert(maxCoords.sameElements(dp.data))
   }
 
   test("Bounding boxes are consistent with input data range") {
     val dataset = (1 to 500).map { _ =>
-      DataPointVector(Array(Random.between(-10f, 10f), Random.between(100f, 200f)), 0)
+      DataPoint(Array(Random.between(-10f, 10f), Random.between(100f, 200f)), 0)
     }.toArray
 
-    val globalMin = dataset.map(_.coordinates).transpose.map(_.min)
-    val globalMax = dataset.map(_.coordinates).transpose.map(_.max)
+    val globalMin = dataset.map(_.data).transpose.map(_.min)
+    val globalMax = dataset.map(_.data).transpose.map(_.max)
 
-    val partitions = kSDA.divideSpace(dataset, 10)
+    val partitions = kSDA.divideSpace(dataset, null, 10)
 
     for ((minCoords, maxCoords) <- partitions) {
       for (i <- minCoords.indices) {
@@ -78,11 +78,11 @@ class kSDATest extends AnyFunSuite {
     val rand = new Random(seed)
 
     val dataset = (1 to 200).map { _ =>
-      DataPointVector(Array(rand.nextFloat(), rand.nextFloat()), 0)
+      DataPoint(Array(rand.nextFloat(), rand.nextFloat()), 0)
     }.toArray
 
-    val partitions1 = kSDA.divideSpace(dataset, 4, 42)
-    val partitions2 = kSDA.divideSpace(dataset, 4, 42)
+    val partitions1 = kSDA.divideSpace(dataset, null, 4, 42)
+    val partitions2 = kSDA.divideSpace(dataset, null, 4, 42)
 
     assert(partitions1.length == partitions2.length)
     assert(partitions1.map { case (a, b) => (a.toSeq, b.toSeq) }.toSeq ==
