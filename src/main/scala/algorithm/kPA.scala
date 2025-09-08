@@ -21,11 +21,8 @@ object kPA {
   }
 
 
-  def computeOuterSubspace(subspace: (Array[Float], Array[Float]), epsilon: Float): (Array[Float], Array[Float]) = {
-    val (minCoords, maxCoords) = subspace
-    val expandedMin = minCoords.map(_ - epsilon)
-    val expandedMax = maxCoords.map(_ + epsilon)
-    (expandedMin, expandedMax)
+  def computeOuterSubspace(subspace: Subspace, epsilon: Float): Subspace = {
+    ???
   }
 
   def computeInnerSubspace(subspace: (Array[Float], Array[Float]), epsilon: Float): (Array[Float], Array[Float]) = {

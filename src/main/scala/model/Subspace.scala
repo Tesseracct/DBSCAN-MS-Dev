@@ -23,4 +23,9 @@ class Subspace(val points: Array[DataPoint], val bbCoords: Array[(Float, Float)]
     (new Subspace(leftPoints, leftBB), new Subspace(rightPoints, rightBB))
   }
 
+  def outerSubspace(epsilon: Float): Subspace = {
+    val newBB = bbCoords.map { case (min, max) => (min - epsilon, max + epsilon) }
+    new Subspace(points, newBB)
+  }
+
 }
