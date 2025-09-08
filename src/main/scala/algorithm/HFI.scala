@@ -95,7 +95,7 @@ case object HFI {
    * @return An array of unique pairs of data points.
    */
   def samplePairs(dataset: Array[DataPoint], sampleSize: Int, seed: Int): Array[(DataPoint, DataPoint)] = {
-    require(dataset.length > sampleSize, "Dataset must be larger than sample size") // This is not strictly necessary but guards against weird cases
+    if(dataset.length > sampleSize) println(s"Warning in $this! Dataset should be larger than sample size!") // Not strictly necessary but guards against weird cases
     val rng = new Random(seed)
     var pairs = Set[(DataPoint, DataPoint)]()
 
