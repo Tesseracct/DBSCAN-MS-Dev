@@ -6,7 +6,10 @@ package model
  * @param points   The data points contained within the subspace.
  * @param bbCoords The bounding box coordinates for each dimension, represented as tuples of (min, max).
  */
-class Subspace(val points: Array[DataPoint], val bbCoords: Array[(Float, Float)]) {
+class Subspace(val points: Array[DataPoint], val bbCoords: Array[(Float, Float)], val epsilon: Float) {
+  // TODO: Remove default epsilon
+  val outer: Array[(Float, Float)] = this.outerSubspace(epsilon)
+  val inner: Array[(Float, Float)] = this.innerSubspace(epsilon)
 
   /**
    * Splits the subspace into two subspaces along the specified dimension at the median value.
@@ -20,12 +23,29 @@ class Subspace(val points: Array[DataPoint], val bbCoords: Array[(Float, Float)]
     val (leftPoints, rightPoints) = points.partition(_.vectorRep(dimension) <= median)
     val leftBB = bbCoords.updated(dimension, (bbCoords(dimension)._1, median))
     val rightBB = bbCoords.updated(dimension, (median, bbCoords(dimension)._2))
-    (new Subspace(leftPoints, leftBB), new Subspace(rightPoints, rightBB))
+    (new Subspace(leftPoints, leftBB, epsilon), new Subspace(rightPoints, rightBB, epsilon))
   }
 
-  def outerSubspace(epsilon: Float): Subspace = {
-    val newBB = bbCoords.map { case (min, max) => (min - epsilon, max + epsilon) }
-    new Subspace(points, newBB)
+  /**
+   * Computes the ε-Inner Subspace of the Subspace by adjusting the bounding box
+   * coordinates outward according to Definition 8.
+   *
+   * @param epsilon The search radius.
+   * @return An array of tuples representing the outer subspace.
+   */
+  def outerSubspace(epsilon: Float): Array[(Float, Float)] = {
+    bbCoords.map { case (min, max) => (min - epsilon, max + epsilon) }
+  }
+
+  /**
+   * Computes the ε-Inner Subspace of the Subspace by adjusting the bounding box
+   * coordinates inward according to Definition 8.
+   *
+   * @param epsilon The search radius.
+   * @return An array of tuples representing the inner subspace.
+   */
+  def innerSubspace(epsilon: Float): Array[(Float, Float)] = {
+    bbCoords.map { case (min, max) => (min + epsilon, max - epsilon) }
   }
 
 }

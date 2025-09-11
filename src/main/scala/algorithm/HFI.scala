@@ -15,6 +15,7 @@ case object HFI {
    * @param numberOfPivots The number of pivots to select.
    * @param distanceFunction The distance function to use for distance calculations.
    * @param seed Random seed for reproducibility.
+   * @return An array of selected pivots.
    */
   def apply(dataset: Array[DataPoint],
             numberOfPivots: Int = 40,

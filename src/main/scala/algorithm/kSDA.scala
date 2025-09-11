@@ -15,16 +15,16 @@ object kSDA {
    * @param dataset The dataset to be divided, represented as an array of DataPoint.
    * @param numberOfPartitions The desired number of partitions.
    * @param seed Optional seed for reproducibility. Defaults to a random seed.
-   * @return An array of coordinates as tuples, in the form of (min, max).
+   * @return An array of Subspaces containing the coordinates of the bounding box.
    */
-  def apply(dataset: Array[DataPoint], pivots: Array[DataPoint], numberOfPartitions: Int, seed: Int = Random.nextInt()): Array[Subspace] = {
+  def apply(dataset: Array[DataPoint], pivots: Array[DataPoint], numberOfPartitions: Int, seed: Int = Random.nextInt(), epsilon: Float): Array[Subspace] = {
     require(dataset.nonEmpty, "Dataset must not be empty")
     require(numberOfPartitions > 0, "Number of partitions must be greater than zero")
 
     val rng = new Random(seed)
 
     dataset.foreach(point => point.vectorRep = MapPointToVectorSpace(point, pivots))
-    val subspace: Subspace = new Subspace(dataset, Array.fill(dataset.head.dimensions)((Float.NaN, Float.NaN)))
+    val subspace: Subspace = new Subspace(dataset, Array.fill(dataset.head.dimensions)((Float.NaN, Float.NaN)), epsilon)
     val q = mutable.Queue.apply(subspace)
 
     while (q.length < numberOfPartitions) {
