@@ -11,7 +11,7 @@ case object HFI {
   /**
    * Selects pivots using the Hull Foci Algorithm (HFI).
    *
-   * @param dataset The dataset from which to select pivots.
+   * @param dataset The sampled dataset from which to select pivots.
    * @param numberOfPivots The number of pivots to select.
    * @param distanceFunction The distance function to use for distance calculations.
    * @param seed Random seed for reproducibility.

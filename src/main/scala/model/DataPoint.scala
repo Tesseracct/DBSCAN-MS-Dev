@@ -22,18 +22,21 @@ case class DataPoint(data: Array[Float], id: Long, var label: Int = LABEL.UNDEFI
    */
   def dimensions: Int = vectorRep.length
 
-  // Note that we're only making shallow copies, therefore assuming data won't be changed after withVectorRep
-  // and vectorRep won't be changed after withMask
   /**
    * Copies the DataPoint and sets the vectorRep to the given value.
    * @param vectorRep The new vector representation.
    * @return A new DataPoint with the given vectorRep.
+   *
+   * @note We're only making shallow copies, therefore assuming data won't be changed after withVectorRep is called
    */
   def withVectorRep(vectorRep: Array[Float]): DataPoint = this.copy(vectorRep = vectorRep)
+
   /**
    * Copies the DataPoint and sets the mask to the given value.
    * @param mask The new mask.
    * @return A new DataPoint with the given mask.
+   *
+   * @note We're only making shallow copies, therefore assuming data & vectorRep won't be changed after withMask is called
    */
   def withMask(mask: Int): DataPoint = this.copy(mask = mask)
 }

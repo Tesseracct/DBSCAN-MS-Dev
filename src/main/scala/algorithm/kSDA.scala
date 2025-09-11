@@ -9,10 +9,10 @@ import scala.collection.mutable
 // k-d tree based Space Dividing Algorithm (kSDA)
 object kSDA {
   /**
-   * Divides the given dataset into a specified number of partitions using a k-d tree approach.
+   * Divides the given dataset into a specified number of partitions using the k-d tree approach.
    * Each partition is represented by a bounding-box.
    *
-   * @param dataset The dataset to be divided, represented as an array of DataPoint.
+   * @param dataset The sampled dataset to be divided, represented as an array of DataPoint.
    * @param numberOfPartitions The desired number of partitions.
    * @param seed Optional seed for reproducibility. Defaults to a random seed.
    * @return An array of Subspaces containing the coordinates of the bounding box.
