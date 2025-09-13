@@ -24,17 +24,13 @@ case object SWNQA {
       val searchRegion = lPoint.vectorRep.map(x => (x - epsilon, x + epsilon))
 
       var u = l
-      var uPoint = points(u)
-      while (u < points.length && uPoint.vectorRep(dimension) - lPoint.vectorRep(dimension) <= epsilon) {
+      while (u < points.length && points(u).vectorRep(dimension) - lPoint.vectorRep(dimension) <= epsilon) {
+        val uPoint = points(u)
         if (inSearchRegion(searchRegion, uPoint) && lPoint.distance(uPoint, euclidean) <= epsilon) {
           neighbourhoods(l) += u
           neighbourhoods(u) += l
         }
-
         u = u + 1
-        if (u < points.length) {
-          uPoint = points(u)
-        }
       }
     }
     neighbourhoods.map(_.toArray)
