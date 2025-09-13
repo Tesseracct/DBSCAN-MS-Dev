@@ -34,6 +34,14 @@ case object DBSCAN_MS {
       // TODO: Partitioning with HashPartitioner like this should work but check it something is wrong
       val partitionedRDD = data.partitionBy(new HashPartitioner(numberOfPartitions))
 
+      val clusteredRDD = partitionedRDD.mapPartitions(iter => {
+        val partition = iter.map(_._2).toArray
+
+        val pointsAndNeighbourhoods = SWNQA(partition, epsilon, seed)
+      })
+
+
+
 
       partitionedRDD.collect().foreach(println)
     }
