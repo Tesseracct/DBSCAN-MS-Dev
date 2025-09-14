@@ -49,7 +49,7 @@ case object DBSCAN_MS {
 
 
 
-      partitionedRDD.collect().foreach(println)
+      clusteredRDD.collect().foreach(println)
     }
   }
 

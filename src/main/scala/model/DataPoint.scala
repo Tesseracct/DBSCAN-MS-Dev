@@ -22,7 +22,7 @@ case class DataPoint(data: Array[Float],
   }
 
   override def toString: String = s"DataPoint(${data.mkString(", ")}, id=$id, label=$label, visited=$visited, " +
-    s"vectorRep=${if (vectorRep != null) vectorRep.mkString(", ")}, mask=$mask)"
+    s"vectorRep=${if (vectorRep != null) vectorRep.mkString(", ")}, mask=$mask, cluster=$cluster)"
 
   def distance(other: DataPoint, distanceFunction: (Array[Float], Array[Float]) => Float): Float = {
     distanceFunction(this.data, other.data)
