@@ -8,11 +8,12 @@ import utils.Distance.euclidean
 
 case object DBSCAN_MS {
   def run(filepath: String,
-          numberOfPartitions: Int,
-          seed: Int = 42,
           epsilon: Float,
+          minPts: Int,
           numberOfPivots: Int,
-          samplingDensity: Double = 0.001): Unit = {
+          numberOfPartitions: Int,
+          samplingDensity: Double = 0.001,
+          seed: Int = 42): Unit = {
     val spark = SparkSession.builder().appName("Example").master("local[*]").getOrCreate()
     val sc = spark.sparkContext
 
@@ -32,15 +33,17 @@ case object DBSCAN_MS {
 
       require(numberOfPartitions == subspaces.length, "Something has gone very wrong. Number of partitions does not match number of subspaces.")
       // TODO: Partitioning with HashPartitioner like this should work but check it something is wrong
-      val partitionedRDD = data.partitionBy(new HashPartitioner(numberOfPartitions))
+      val partitionedRDD = data.partitionBy(new HashPartitioner(numberOfPartitions)).map(_._2)
 
-      val clusteredRDD = partitionedRDD.mapPartitions(iter => {
-        val partition = iter.map(_._2).toArray
+      val clusteredRDD: RDD[DataPoint] = partitionedRDD.mapPartitions(iter => {
+        val partition = iter.toArray
         val rng = new scala.util.Random(seed)
         val dimension = rng.nextInt(partition.head.dimensions)
-        val sortedPartition = partition.sortBy(point => point.vectorRep(dimension))
 
+        val sortedPartition = partition.sortBy(point => point.vectorRep(dimension))
         val neighbourhoods = SWNQA(sortedPartition, dimension, epsilon)
+
+        DBSCAN(sortedPartition, neighbourhoods, minPts).iterator
       })
 
 

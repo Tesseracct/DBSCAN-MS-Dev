@@ -3,8 +3,13 @@ package model
 import java.util
 
 
-case class DataPoint(data: Array[Float], id: Long, var label: Int = LABEL.UNDEFINED,
-                     var visited: Boolean = false, var vectorRep: Array[Float] = null, var mask: Int = -1) {
+case class DataPoint(data: Array[Float],
+                     id: Long,
+                     var label: Int = LABEL.UNDEFINED,
+                     var visited: Boolean = false,
+                     var vectorRep: Array[Float] = null,
+                     var mask: Int = -1,
+                     var cluster: Int = -1) {
   override def equals(obj: Any): Boolean = obj match {
     case that: DataPoint =>
       this.mask == that.mask && this.label == that.label && (this.data sameElements that.data)

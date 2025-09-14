@@ -30,7 +30,7 @@ case object SWNQA {
           neighbourhoods(l) += u
           neighbourhoods(u) += l
         }
-        u = u + 1
+        u += 1
       }
     }
     neighbourhoods.map(_.toArray)
