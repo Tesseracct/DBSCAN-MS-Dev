@@ -1,6 +1,6 @@
 package algorithm
 
-import model.DataPoint
+import model.{DataPoint, LABEL, MASK}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.{HashPartitioner, SparkContext}
@@ -46,10 +46,19 @@ case object DBSCAN_MS {
         DBSCAN(sortedPartition, neighbourhoods, minPts).iterator
       })
 
+      // As per DBSCAN-MS, Section VII: "we only need to transfer the core and border objects in the margins"
+      // TODO: Check if Mask is necessary: no conditional for SPACE_INNER? => Margin conditional could be replaced by bool
+      val mergingCandidates = clusteredRDD.filter(point =>
+        (point.mask == MASK.MARGIN_OUTER || point.mask == MASK.MARGIN_INNER) &&
+          (point.label == LABEL.CORE || point.label == LABEL.BORDER)).collect()
 
+      CCGMA(mergingCandidates)
 
 
       clusteredRDD.collect().foreach(println)
+    }
+    finally {
+      spark.stop()
     }
   }
 
