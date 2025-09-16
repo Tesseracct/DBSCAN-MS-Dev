@@ -10,7 +10,8 @@ case class DataPoint(data: Array[Float],
                      var vectorRep: Array[Float] = null,
                      var mask: Int = -1,
                      var localCluster: Int = -1,
-                     var partition: Int = -1) {
+                     var partition: Int = -1,
+                     var globalCluster: Long = -1) {
   override def equals(obj: Any): Boolean = obj match {
     case that: DataPoint => this.id == that.id && this.partition == that.partition
     case _ => false
@@ -23,7 +24,7 @@ case class DataPoint(data: Array[Float],
 
   override def toString: String = s"DataPoint(${data.mkString(", ")}, id=$id, label=$label, visited=$visited, " +
                                   s"vectorRep=${if (vectorRep != null) vectorRep.mkString(", ")}, " +
-                                  s"mask=$mask, cluster=$localCluster, partition=$partition)"
+                                  s"mask=$mask, cluster=$localCluster, partition=$partition, globalCluster=$globalCluster)"
 
   def distance(other: DataPoint, distanceFunction: (Array[Float], Array[Float]) => Float): Float = {
     distanceFunction(this.data, other.data)

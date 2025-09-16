@@ -52,11 +52,23 @@ case object DBSCAN_MS {
         (point.mask == MASK.MARGIN_OUTER || point.mask == MASK.MARGIN_INNER) &&
           (point.label == LABEL.CORE || point.label == LABEL.BORDER)).collect()
 
+      val globalClusterMappings = CCGMA(mergingCandidates)
+      val bcGlobalClusterMappings = sc.broadcast(globalClusterMappings)
 
+      val mergedRDD = clusteredRDD.mapPartitions(iter => {
+        val partition = iter.toArray
+        val globalClusterMappings = bcGlobalClusterMappings.value
 
+        partition.map(point => {
+          globalClusterMappings.get((point.partition, point.localCluster)) match {
+            case Some(cluster) => point.globalCluster = cluster
+            case None => point.globalCluster = ((point.partition + 1) << 32) | point.localCluster
+          }
+          point
+        }).iterator
+      })
 
-
-      clusteredRDD.collect().foreach(println)
+      mergedRDD.collect().foreach(println)
     }
     finally {
       spark.stop()
