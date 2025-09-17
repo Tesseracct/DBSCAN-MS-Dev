@@ -15,7 +15,7 @@ case object DBSCAN_MS {
           samplingDensity: Double = 0.001,
           seed: Int = 42,
           dataHasHeader: Boolean = false,
-          dataHasRightLabel: Boolean = false): Unit = {
+          dataHasRightLabel: Boolean = false): Array[DataPoint] = {
     val spark = SparkSession.builder().appName("Example").master("local[*]").getOrCreate()
     val sc = spark.sparkContext
 
@@ -48,6 +48,7 @@ case object DBSCAN_MS {
         DBSCAN(sortedPartition, neighbourhoods, minPts).iterator
       })
 
+
       // As per DBSCAN-MS, Section VII: "we only need to transfer the core and border objects in the margins"
       // TODO: Check if Mask is necessary: no conditional for SPACE_INNER? => Margin conditional could be replaced by bool
       val mergingCandidates = clusteredRDD.filter(point =>
@@ -64,13 +65,13 @@ case object DBSCAN_MS {
         partition.map(point => {
           globalClusterMappings.get((point.partition, point.localCluster)) match {
             case Some(cluster) => point.globalCluster = cluster
-            case None => point.globalCluster = ((point.partition + 1) << 32) | point.localCluster
+            case None => point.globalCluster = if (point.localCluster == -1) -1 else ((point.partition + 1) << 32) | point.localCluster
           }
           point
         }).iterator
       })
 
-      mergedRDD.collect().foreach(println)
+      mergedRDD.collect()
     }
     finally {
       spark.stop()
@@ -91,6 +92,7 @@ case object DBSCAN_MS {
   private def makeDataPoint(line: String, index: Long, hasRightLabel: Boolean): DataPoint = {
     val data = line.split(",").map(_.toFloat)
     val cleanedData = if (hasRightLabel) data.dropRight(1) else data
+    println(s"Make DataPoint: $index") //TODO: Remove
     DataPoint(cleanedData, id = index)
   }
 }
