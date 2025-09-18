@@ -54,7 +54,7 @@ class DBSCAN_MSTest extends AnyFunSuite{
 //    WriteResultToCSV(result, "data/dbscan_dataset_100x2D_result.csv")
 
     val checkingLabels = getRightmostColumn("data/dbscan_dataset_100x2D.csv").toArray.map(_.toFloat.toInt).sorted
-//    println(s"Normalized Mutual Information Score: ${normalizedMutualInfoScore(labelsTrue = checkingLabels, labelsPred = finalResult)}")
+    println(s"Normalized Mutual Information Score: ${normalizedMutualInfoScore(labelsTrue = checkingLabels, labelsPred = finalResult)}")
 
     val y = newLabelsMapping.toArray
     val x = remappedClusters.foldLeft(0)((acc, label) => {
