@@ -19,7 +19,7 @@ class DBSCAN_MSTest extends AnyFunSuite{
 
   test("2D Clustering Test with synthetic data from Sci-Kit Learn") {
     val result = DBSCAN_MS.run("data/dbscan_dataset_100x2D.csv",
-      epsilon = 1.849f,
+      epsilon = 1.1f,
       minPts = 5,
       numberOfPivots = 9,
       numberOfPartitions = 10,
@@ -44,30 +44,19 @@ class DBSCAN_MSTest extends AnyFunSuite{
     println(s"Amount of Points in Clusters: ${remappedClusters.length}")
     println(s"Final Result length: ${finalResult.length}")
 
-//    distinctResult.zipWithIndex.foreach(t => println(s"${t._2}: ID: ${t._1._1}, GCluster: ${t._1._2}"))
+    //    distinctResult.zipWithIndex.foreach(t => println(s"${t._2}: ID: ${t._1._1}, GCluster: ${t._1._2}"))
     val duplicates = distinctResult.map(_._1).groupBy(identity).collect({
       case (id, amount) if amount.length > 1 => id
     })
     duplicates.foreach(println)
     println(s"Duplicate Amount: ${duplicates.size}")
 
-//    WriteResultToCSV(result, "data/dbscan_dataset_100x2D_result.csv")
+    //    WriteResultToCSV(result, "data/dbscan_dataset_100x2D_result.csv")
 
     val checkingLabels = getRightmostColumn("data/dbscan_dataset_100x2D.csv").toArray.map(_.toFloat.toInt).sorted
-    println(s"Normalized Mutual Information Score: ${normalizedMutualInfoScore(labelsTrue = checkingLabels, labelsPred = finalResult)}")
+        println(s"Normalized Mutual Information Score: ${normalizedMutualInfoScore(labelsTrue = checkingLabels, labelsPred = finalResult)}")
 
-    val y = newLabelsMapping.toArray
-    val x = remappedClusters.foldLeft(0)((acc, label) => {
-      if (label != acc) {
-        acc + 1
-      } else {
-        acc
-      }
-    })
   }
-
-
-
 
   def getRightmostColumn(filePath: String): Seq[String] = {
     Using(Source.fromFile(filePath)) { source =>

@@ -73,7 +73,21 @@ case object DBSCAN_MS {
         }).iterator
       })
 
-      mergedRDD.collect()
+      val mergedWithoutNoise = mergedRDD.filter(_.globalCluster != -1)
+      val noise = mergedRDD.filter(_.globalCluster == -1)
+
+      val noiseWithId = noise.keyBy(_.id)
+      val mergedWithoutNoiseWithId = mergedWithoutNoise.keyBy(_.id)
+      val trueNoise = noiseWithId.leftOuterJoin(mergedWithoutNoiseWithId)
+        .filter(_._2._2.isEmpty)
+        .map(_._2._1)
+      val cleanedRDD = mergedWithoutNoise.union(trueNoise)
+
+
+//      val trueNoise = noise.filter(x => !mergedWithoutNoise.map(y => y.id == x.id).reduce(_ || _))
+//      val cleanedRDD = mergedWithoutNoise.union(trueNoise)
+
+      cleanedRDD.collect()
     }
     finally {
       spark.stop()
