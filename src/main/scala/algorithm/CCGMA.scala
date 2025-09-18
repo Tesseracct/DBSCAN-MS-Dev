@@ -33,5 +33,11 @@ case object CCGMA {
           ((partialCluster.partition, partialCluster.localCluster), globalClusterID.toLong)
         }
       }.toMap
+
+
+//    for (i <- 0 until connectedComponents.size()) {
+//      val globalCluster = connectedComponents.get(i)
+//      val x = globalCluster.asScala.map(p => ((p.partition, p.localCluster), i))
+//    }
   }
 }

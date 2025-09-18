@@ -65,7 +65,9 @@ case object DBSCAN_MS {
         partition.map(point => {
           globalClusterMappings.get((point.partition, point.localCluster)) match {
             case Some(cluster) => point.globalCluster = cluster
-            case None => point.globalCluster = if (point.localCluster == -1) -1 else ((point.partition + 1) << 32) | point.localCluster
+            case None => point.globalCluster = if (point.localCluster == -1) -1 else {
+              ((point.partition.toLong + 1L) << 32) | point.localCluster.toLong
+            }
           }
           point
         }).iterator
