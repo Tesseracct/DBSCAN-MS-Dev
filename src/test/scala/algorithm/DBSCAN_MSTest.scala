@@ -1,5 +1,6 @@
 package algorithm
 
+import imp.MutualInformation
 import imp.MutualInformation.normalizedMutualInfoScore
 import org.scalatest.funsuite.AnyFunSuite
 import utils.{GetResultLabels, Testing, WriteResultToCSV}
@@ -92,7 +93,7 @@ class DBSCAN_MSTest extends AnyFunSuite{
   }
 
   test("Second Moon Test") {
-    val result = DBSCAN_MS.run("data/moons_2500x2D_2.csv",
+    val result = DBSCAN_MS.run("data/moons_2500x2D.csv",
       epsilon = 0.1f,
       minPts = 5,
       numberOfPivots = 10,
@@ -101,9 +102,9 @@ class DBSCAN_MSTest extends AnyFunSuite{
       dataHasHeader = true,
       dataHasRightLabel = true)
 
-    val (features, labelsTrue) = Testing.splitData(Testing.readDataToString("data/moons_2500x2D_2.csv"))
-
-    val predLabels = GetResultLabels(result, remappedLabels = true, originalDataset = labelsTrue)
+    val (originalData, labelsTrue) = Testing.splitData(Testing.readDataToString("data/moons_2500x2D.csv", header = true))
+    val predLabels = GetResultLabels(result, originalDataset = Option(originalData))
+    assert(normalizedMutualInfoScore(labelsTrue,predLabels) == 1.0D)
 
 
   }

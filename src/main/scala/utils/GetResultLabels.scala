@@ -12,8 +12,8 @@ object GetResultLabels {
       case _ => false}), "Labels can only be ordered according to either the original dataset, or sorted, not both")
 
     val r: Array[DataPoint] = if (originalDataset.isDefined) {
-      val orderMap = originalDataset.get.zipWithIndex.toMap
-      val indexedResult = result.map(p => (p, orderMap(p.data)))
+      val orderMap = originalDataset.get.map(java.util.Arrays.hashCode).zipWithIndex.toMap
+      val indexedResult = result.map(p => (p, orderMap(java.util.Arrays.hashCode(p.data))))
       val sortedResult = indexedResult.sortBy(_._2)
       sortedResult.map(_._1)
     } else result

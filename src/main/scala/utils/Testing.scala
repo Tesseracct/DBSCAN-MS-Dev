@@ -9,10 +9,11 @@ case object Testing {
    * @param filePath The path to the CSV file.
    * @return An array of arrays containing the data.
    */
-  def readDataToString(filePath: String): Array[Array[String]] = {
-    Using(Source.fromFile(filePath)) { source =>
+  def readDataToString(filePath: String, header: Boolean): Array[Array[String]] = {
+    val x = Using(Source.fromFile(filePath)) { source =>
       source.getLines().map(_.split(',')).toArray
     }.get
+    if (header) x.tail else x
   }
 
   /**
