@@ -2,7 +2,7 @@ package algorithm
 
 import imp.MutualInformation.normalizedMutualInfoScore
 import org.scalatest.funsuite.AnyFunSuite
-import utils.WriteResultToCSV
+import utils.{GetResultLabels, Testing, WriteResultToCSV}
 
 import scala.io.Source
 import scala.util.Using
@@ -53,7 +53,7 @@ class DBSCAN_MSTest extends AnyFunSuite{
 
     //    WriteResultToCSV(result, "data/dbscan_dataset_100x2D_result.csv")
 
-    val checkingLabels = getRightmostColumn("data/dbscan_dataset_100x2D.csv").toArray.map(_.toFloat.toInt).sorted
+    val checkingLabels = Testing.getRightmostColumn("data/dbscan_dataset_100x2D.csv").toArray.map(_.toFloat.toInt).sorted
     println(s"Normalized Mutual Information Score: ${normalizedMutualInfoScore(labelsTrue = checkingLabels, labelsPred = finalResult)}")
 
   }
@@ -80,7 +80,7 @@ class DBSCAN_MSTest extends AnyFunSuite{
     })
 
     val finalResult = remappedClusters.concat(distinctResult.filter(_._2 == -1).map(_ => -1)).sorted
-    val checkingLabels = getRightmostColumn("data/moons_2500x2D.csv").toArray.map(_.toFloat.toInt).sorted
+    val checkingLabels = Testing.getRightmostColumn("data/moons_2500x2D.csv").toArray.map(_.toFloat.toInt).sorted
     val mInfoScore = normalizedMutualInfoScore(labelsTrue = checkingLabels, labelsPred = finalResult)
 
     println(s"Cluster Mapping: ${distinctClusters.map(_._2).distinct.zipWithIndex.mkString("Array(", ", ", ")")}")
@@ -91,9 +91,22 @@ class DBSCAN_MSTest extends AnyFunSuite{
 
   }
 
-  def getRightmostColumn(filePath: String): Seq[String] = {
-    Using(Source.fromFile(filePath)) { source =>
-      source.getLines().drop(1).map(_.split(',').last).toSeq
-    }.getOrElse(Seq.empty)
+  test("Second Moon Test") {
+    val result = DBSCAN_MS.run("data/moons_2500x2D_2.csv",
+      epsilon = 0.1f,
+      minPts = 5,
+      numberOfPivots = 10,
+      numberOfPartitions = 10,
+      samplingDensity = 0.2f,
+      dataHasHeader = true,
+      dataHasRightLabel = true)
+
+    val (features, labelsTrue) = Testing.splitData(Testing.readDataToString("data/moons_2500x2D_2.csv"))
+
+    val predLabels = GetResultLabels(result, remappedLabels = true, originalDataset = labelsTrue)
+
+
   }
+
+
 }
