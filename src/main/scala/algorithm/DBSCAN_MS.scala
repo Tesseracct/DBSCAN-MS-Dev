@@ -91,11 +91,12 @@ case object DBSCAN_MS {
     val globalClusterMappings = CCGMA(mergingCandidates)
     val bcGlobalClusterMappings = sc.broadcast(globalClusterMappings)
 
+    val bitOffset = 19
     val mergedRDD = clusteredRDD.map(point => {
       bcGlobalClusterMappings.value.get((point.partition, point.localCluster)) match {
         case Some(cluster) => point.globalCluster = cluster
         case None => point.globalCluster = if (point.localCluster == -1) -1 else {
-          ((point.partition + 1) << 19) | point.localCluster
+          ((point.partition + 1) << bitOffset) | point.localCluster
         }
       }
       point
