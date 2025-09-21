@@ -7,12 +7,18 @@ import utils.{GetResultLabels, Testing}
 
 class DBSCAN_MSTest extends AnyFunSuite{
 //  test("Test") {
-//    DBSCAN_MS.run("data/synth_data_points10000x3D.csv",
-//      epsilon = 0.03f,
+//    val filepath = "data/synth_data_points10000x3D.csv"
+//    val result = DBSCAN_MS.run(filepath,
+//      epsilon = 0.05f,
 //      minPts = 3,
 //      numberOfPivots = 9,
 //      numberOfPartitions = 10,
-//      samplingDensity = 0.2f)
+//      samplingDensity = 0.1f)
+//
+//    val points = result.map(p => (p.id, p.globalCluster)).distinct
+//    val clusters = points.groupBy(_._2)
+//
+//    println(clusters.size)
 //  }
 
   test("100 x 2D Synthetic") {
