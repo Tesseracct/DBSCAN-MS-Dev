@@ -8,7 +8,13 @@ import utils.Distance.euclidean
 
 case object DBSCAN_MS {
   /**
-   * Executes the DBSCAN-MS clustering algorithm on the given dataset.
+   * Executes the DBSCAN-MS clustering algorithm (Yang et al., 2019) on the given dataset using Spark.
+   * The algorithm proceeds in three stages: (1) partitioning the data into balanced subspaces via sampling,
+   * pivot selection, and k-d tree space division; (2) running local DBSCAN in each partition using a sliding
+   * window neighborhood query; and (3) merging local clusters into global clusters via a connected components graph.
+   *
+   * Input must be a CSV file of numeric vectors, optionally with a header row and/or ground-truth labels in the last column.
+   * The result is an array of `DataPoint` objects with assigned cluster IDs (globalCluster), where -1 denotes noise.
    *
    * @param filepath           The path to the input file containing the data to be clustered.
    * @param epsilon            The maximum distance two points can be apart to be considered neighbours.
