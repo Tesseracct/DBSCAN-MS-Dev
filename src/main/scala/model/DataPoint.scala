@@ -13,7 +13,7 @@ case class DataPoint(data: Array[Float],
                      var partition: Int = -1,
                      var globalCluster: Int = -1) {
   override def equals(obj: Any): Boolean = obj match {
-    case that: DataPoint => this.id == that.id && this.partition == that.partition
+    case that: DataPoint => this.id == that.id && this.partition == that.partition && this.data == that.data
     case _ => false
   }
 

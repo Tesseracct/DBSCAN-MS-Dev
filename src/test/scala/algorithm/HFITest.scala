@@ -46,7 +46,6 @@ class HFITest() extends AnyFunSuite {
 
   // Test newPivotSetPrecision
   test("Test newPivotSetPrecision") {
-    // TODO: Implement
   }
 
 
