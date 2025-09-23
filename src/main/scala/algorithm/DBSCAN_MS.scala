@@ -87,10 +87,10 @@ case object DBSCAN_MS {
     val mergingCandidates = clusteredRDD.filter(point =>
       (point.mask == MASK.MARGIN_OUTER || point.mask == MASK.MARGIN_INNER) &&
         (point.label == LABEL.CORE || point.label == LABEL.BORDER)).collect()
+    val bcGlobalClusterMappings = sc.broadcast(CCGMA(mergingCandidates))
 
-    val globalClusterMappings = CCGMA(mergingCandidates)
-    val bcGlobalClusterMappings = sc.broadcast(globalClusterMappings)
-
+    // Merge local clusters into global clusters. If one cluster sits entirely in one partition,
+    // we give it a unique ID by encoding the partition number in the high bits.
     val bitOffset = 19
     val mergedRDD = clusteredRDD.map(point => {
       bcGlobalClusterMappings.value.get((point.partition, point.localCluster)) match {
@@ -102,14 +102,11 @@ case object DBSCAN_MS {
       point
     })
 
-    // TODO: Take a look at the efficiency of this
-    val mergedWithoutNoise = mergedRDD.filter(_.globalCluster != -1)
-    val noise = mergedRDD.filter(_.globalCluster == -1)
-
-    val noiseWithId = noise.keyBy(_.id)
-    val mergedWithoutNoiseWithId = mergedWithoutNoise.keyBy(_.id)
-    val trueNoise = noiseWithId.leftOuterJoin(mergedWithoutNoiseWithId).filter(_._2._2.isEmpty).map(_._2._1)
-    mergedWithoutNoise.union(trueNoise)
+    // Eliminate false noise, that is, points labeled as noise in one partition but are part of a cluster in another partition.
+    val clustered = mergedRDD.filter(_.globalCluster != -1).keyBy(_.id)
+    val noise = mergedRDD.filter(_.globalCluster == -1).keyBy(_.id)
+    val trueNoise = noise.subtractByKey(clustered).values
+    clustered.values.union(trueNoise)
   }
 
   private def readData(sc: SparkContext, path: String, hasHeader: Boolean, hasRightLabel: Boolean): RDD[DataPoint] = {
