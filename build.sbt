@@ -7,11 +7,10 @@ lazy val root = (project in file("."))
     name := "DBSCAN-MS"
   )
 
-libraryDependencies ++= Seq("org.apache.spark" %% "spark-core" % "3.5.6",
-                            "org.apache.spark" %% "spark-sql"  % "3.5.6",
+libraryDependencies ++= Seq("org.apache.spark" %% "spark-core" % "4.0.1" % "provided",
+                            "org.apache.spark" %% "spark-sql" % "4.0.1" % "provided",
                             "org.scalanlp" %% "breeze" % "2.1.0",
                             "org.scalanlp" %% "breeze-viz" % "2.1.0",
-                            "org.apache.spark" %% "spark-core" % "3.5.1" % "provided",
                             "org.scalatest" %% "scalatest" % "3.2.19" % Test,
                             "org.jgrapht" % "jgrapht-core" % "1.5.2")
 
