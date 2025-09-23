@@ -24,14 +24,14 @@ object kSDA {
     val rng = new Random(seed)
 
     dataset.foreach(point => point.vectorRep = MapPointToVectorSpace(point, pivots))
-    val subspace: Subspace = new Subspace(dataset, Array.fill(dataset.head.dimensions)((Float.NaN, Float.NaN)), epsilon)
+    val subspace: Subspace = Subspace(dataset, Array.fill(dataset.head.dimensions)((Float.NaN, Float.NaN)), epsilon)
     val q = mutable.Queue.apply(subspace)
 
     while (q.length < numberOfPartitions) {
       val currentPartition = q.dequeue()
       val randomDimension = rng.nextInt(currentPartition.points.head.dimensions)
       val (a, b) = currentPartition.split(randomDimension)
-      if (a.points.nonEmpty) q.enqueue(a) // TODO: Might be too expensive with little gain
+      if (a.points.nonEmpty) q.enqueue(a)
       if (b.points.nonEmpty) q.enqueue(b)
     }
 
