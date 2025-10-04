@@ -7,8 +7,21 @@ import org.jgrapht.graph.{DefaultEdge, SimpleGraph}
 import scala.jdk.CollectionConverters.{ListHasAsScala, SetHasAsScala}
 
 //TODO: Consider optimization here, how expensive is asScala?
-case object CCGMA {
+object CCGMA {
+  /**
+   * Applies the CCGMA merging algorithm to the merging candidates.
+   * The algorithm constructs a graph where local clusters are vertices and edges
+   * connect clusters that share core points. It then identifies connected components
+   * in the graph to assign global cluster IDs.
+   *
+   * @param mergingCandidates An array of DataPoint objects to be merged into global clusters.
+   * @return A map where keys are tuples of (partition, localCluster) and values are the corresponding global cluster IDs.
+   */
   def apply(mergingCandidates: Array[DataPoint]): Map[(Int, Int), Int] = {
+    execute(mergingCandidates)
+  }
+
+  def execute(mergingCandidates: Array[DataPoint]): Map[(Int, Int), Int] = {
     val mergingObjects: Map[Long, Array[DataPoint]] = mergingCandidates.groupBy(_.id)
 
     val graph = new SimpleGraph[(Int, Int), DefaultEdge](classOf[DefaultEdge])

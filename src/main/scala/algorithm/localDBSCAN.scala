@@ -4,7 +4,7 @@ import model.{DataPoint, LABEL}
 
 import scala.collection.mutable
 
-case object DBSCAN {
+object localDBSCAN {
   /**
    * Performs local DBSCAN clustering on the given dataset.
    * @param points The dataset to cluster.
@@ -13,6 +13,10 @@ case object DBSCAN {
    * @return The clustered dataset.
    */
   def apply(points: Array[DataPoint], neighbourhoods: Array[Array[Int]], minPts: Int): Array[DataPoint] = {
+    execute(points, neighbourhoods, minPts)
+  }
+
+  def execute(points: Array[DataPoint], neighbourhoods: Array[Array[Int]], minPts: Int): Array[DataPoint] = {
     var currentCluster = 0
     for (i <- points.indices) {
       val point = points(i)

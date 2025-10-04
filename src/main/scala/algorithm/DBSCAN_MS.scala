@@ -6,7 +6,7 @@ import org.apache.spark.sql.SparkSession
 import org.apache.spark.{HashPartitioner, SparkContext}
 import utils.Distance.euclidean
 
-case object DBSCAN_MS {
+object DBSCAN_MS {
   /**
    * Executes the DBSCAN-MS clustering algorithm (Yang et al., 2019) on the given dataset using Spark.
    * The algorithm proceeds in three stages: (1) partitioning the data into balanced subspaces via sampling,
@@ -83,7 +83,7 @@ case object DBSCAN_MS {
       val sortedPartition = partition.sortBy(point => point.vectorRep(dimension))
       val neighbourhoods = SWNQA(sortedPartition, dimension, epsilon)
 
-      DBSCAN(sortedPartition, neighbourhoods, minPts).iterator
+      localDBSCAN(sortedPartition, neighbourhoods, minPts).iterator
     })
 
 

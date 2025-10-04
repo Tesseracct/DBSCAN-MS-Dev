@@ -18,6 +18,10 @@ object kSDA {
    * @return An array of Subspaces containing the coordinates of the bounding box.
    */
   def apply(dataset: Array[DataPoint], pivots: Array[DataPoint], numberOfPartitions: Int, seed: Int = Random.nextInt(), epsilon: Float): Array[Subspace] = {
+    execute(dataset, pivots, numberOfPartitions, seed, epsilon)
+  }
+
+  def execute(dataset: Array[DataPoint], pivots: Array[DataPoint], numberOfPartitions: Int, seed: Int = Random.nextInt(), epsilon: Float): Array[Subspace] = {
     require(dataset.nonEmpty, "Dataset must not be empty")
     require(numberOfPartitions > 0, "Number of partitions must be greater than zero")
 

@@ -14,6 +14,13 @@ object HF {
    * @return An array of selected pivot candidates.
    */
   def apply(dataset: Array[DataPoint],
+            numberOfPivotCandidates: Int,
+            distanceFunction: (Array[Float], Array[Float]) => Float,
+            seed: Int): Array[DataPoint] = {
+    execute(dataset, numberOfPivotCandidates, distanceFunction, seed)
+  }
+
+  def execute(dataset: Array[DataPoint],
                             numberOfPivotCandidates: Int,
                             distanceFunction: (Array[Float], Array[Float]) => Float,
                             seed: Int): Array[DataPoint] = {

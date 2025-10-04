@@ -7,7 +7,7 @@ import utils.MapPointToVectorSpace
 import scala.util.Random
 
 
-case object HFI {
+object HFI {
   /**
    * Selects pivots using the Hull Foci Algorithm (HFI).
    *
@@ -18,6 +18,13 @@ case object HFI {
    * @return An array of selected pivots.
    */
   def apply(dataset: Array[DataPoint],
+            numberOfPivots: Int = 40,
+            distanceFunction: (Array[Float], Array[Float]) => Float = euclidean,
+            seed: Int = Random.nextInt()): Array[DataPoint] = {
+    execute(dataset, numberOfPivots, distanceFunction, seed)
+  }
+
+  def execute(dataset: Array[DataPoint],
             numberOfPivots: Int = 40,
             distanceFunction: (Array[Float], Array[Float]) => Float = euclidean,
             seed: Int = Random.nextInt()): Array[DataPoint] = {

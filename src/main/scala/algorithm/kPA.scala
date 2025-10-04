@@ -12,6 +12,10 @@ object kPA {
    * @return A list of tuples containing the point and the partition index.
    */
   def apply(point: DataPoint, pivots: Array[DataPoint], subspaces: Array[Subspace]): List[(Int, DataPoint)] = {
+    execute(point, pivots, subspaces)
+  }
+
+  def execute(point: DataPoint, pivots: Array[DataPoint], subspaces: Array[Subspace]): List[(Int, DataPoint)] = {
     val newPoint: DataPoint = if (point.vectorRep == null) point.withVectorRep(MapPointToVectorSpace(point, pivots)) else point
 
     var returnList = List[(Int, DataPoint)]()
@@ -31,7 +35,6 @@ object kPA {
 
     returnList
   }
-
 
 
   /**

@@ -6,7 +6,7 @@ import utils.Distance.euclidean
 import scala.collection.mutable.ArrayBuffer
 
 
-case object SWNQA {
+object SWNQA {
   /**
    * Computes the neighbourhoods of a given set of data points.
    * @param points The data points sorted along dimension to compute the neighbourhoods for.
@@ -17,6 +17,10 @@ case object SWNQA {
    * @note Data points must be sorted along dimension before passing them to this function!
    */
   def apply(points: Array[DataPoint], dimension: Int, epsilon: Float): Array[Array[Int]] = {
+    execute(points, dimension, epsilon)
+  }
+
+  def execute(points: Array[DataPoint], dimension: Int, epsilon: Float): Array[Array[Int]] = {
     val neighbourhoods: Array[ArrayBuffer[Int]] = Array.fill(points.length)(ArrayBuffer[Int]())
 
     for (l <- points.indices) {
