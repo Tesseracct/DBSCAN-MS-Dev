@@ -41,7 +41,7 @@ object SWNQA {
       while (u < points.length && points(u).vectorRep(dimension) - lPoint.vectorRep(dimension) <= epsilon) {
         val uPoint = points(u)
         if (inSearchRegion(srLowerBound, srUpperBound, uPoint) && lPoint.distance(uPoint, euclidean) <= epsilon) {
-          neighbourhoods(l) += u // There is duplication of assigned points here
+          neighbourhoods(l) += u
           neighbourhoods(u) += l
         }
         u += 1
