@@ -22,13 +22,12 @@ object SWNQA {
 
   def execute(points: Array[DataPoint], dimension: Int, epsilon: Float): Array[Array[Int]] = {
     val neighbourhoods: Array[ArrayBuffer[Int]] = Array.fill(points.length)(ArrayBuffer[Int]())
+    val srLowerBound: Array[Float] = new Array[Float](points.head.dimensions)
+    val srUpperBound: Array[Float] = new Array[Float](points.head.dimensions)
 
     for (l <- points.indices) {
       val lPoint = points(l)
 
-
-      val srLowerBound: Array[Float] = new Array[Float](lPoint.dimensions)
-      val srUpperBound: Array[Float] = new Array[Float](lPoint.dimensions)
       for (i <- lPoint.vectorRep.indices) {
         srLowerBound(i) = lPoint.vectorRep(i) - epsilon
         srUpperBound(i) = lPoint.vectorRep(i) + epsilon
