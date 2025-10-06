@@ -33,9 +33,6 @@ object SWNQA {
         srUpperBound(i) = lPoint.vectorRep(i) + epsilon
       }
 
-
-      //val searchRegion = lPoint.vectorRep.map(x => (x - epsilon, x + epsilon))
-
       var u = l
       while (u < points.length && points(u).vectorRep(dimension) - lPoint.vectorRep(dimension) <= epsilon) {
         val uPoint = points(u)
@@ -50,15 +47,6 @@ object SWNQA {
   }
 
   def inSearchRegion(srLowerBound: Array[Float], srUpperBound: Array[Float], point: DataPoint): Boolean = {
-    /*
-    for (i <- searchRegion.indices) {
-      if (point.vectorRep(i) < searchRegion(i)._1 || point.vectorRep(i) > searchRegion(i)._2) {
-        return false
-      }
-    }
-    true
-     */
-
     var i = 0
     val n = point.dimensions
     while (i < n) {
