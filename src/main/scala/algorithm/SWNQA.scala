@@ -34,7 +34,7 @@ object SWNQA {
         srUpperBound(i) = lPoint.vectorRep(i) + epsilon
       }
 
-      var u = l
+      var u = l + 1
       while (u < points.length && points(u).vectorRep(dimension) - lPoint.vectorRep(dimension) <= epsilon) {
         val uPoint = points(u)
         if (inSearchRegion(srLowerBound, srUpperBound, uPoint) && lPoint.distance(uPoint, euclidean) <= epsilon) {
