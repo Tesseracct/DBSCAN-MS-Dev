@@ -33,10 +33,10 @@ object localDBSCAN {
           while (queue.nonEmpty) {
             val currentIndex = queue.dequeue()
             val currentPoint = points(currentIndex)
+            currentPoint.localCluster = currentCluster
+
             if (!currentPoint.visited) {
               currentPoint.visited = true
-              currentPoint.localCluster = currentCluster
-
               val currentNeighbourhood = neighbourhoods(currentIndex)
               if (currentNeighbourhood.length >= minPts) {
                 currentPoint.label = LABEL.CORE
@@ -45,7 +45,6 @@ object localDBSCAN {
                 currentPoint.label = LABEL.BORDER
               }
             } else {
-              currentPoint.localCluster = currentCluster
               if (currentPoint.label == LABEL.NOISE) {
                 currentPoint.label = LABEL.BORDER
               }
