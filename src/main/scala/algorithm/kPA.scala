@@ -21,13 +21,16 @@ object kPA {
     var returnList = List[(Int, DataPoint)]()
     for (i <- subspaces.indices) {
       val subspace = subspaces(i)
-      if (inside(newPoint, subspace.outer)) {
-        val pointWithMask =  if (inside(newPoint, subspace.inner)) newPoint else newPoint.withMask()
+      if (inside(newPoint, subspace.inner)) {
+        newPoint.partition = i
+        return List((i, newPoint))
+      }
+      else if (inside(newPoint, subspace.outer)) {
+        val pointWithMask = newPoint.withMask()
         pointWithMask.partition = i
         returnList = (i, pointWithMask) :: returnList
       }
     }
-
     returnList
   }
 
