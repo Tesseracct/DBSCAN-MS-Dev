@@ -22,7 +22,6 @@ object localDBSCAN {
       val point = points(i)
       if (!point.visited) {
         point.visited = true
-        point.label = LABEL.NOISE
 
         val neighbourhood = neighbourhoods(i)
         if (neighbourhood.length >= minPts) {

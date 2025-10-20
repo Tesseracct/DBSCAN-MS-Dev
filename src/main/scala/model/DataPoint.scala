@@ -5,7 +5,7 @@ import java.util
 
 case class DataPoint(data: Array[Float],
                      id: Long,
-                     var label: Int = LABEL.UNDEFINED,
+                     var label: Int = LABEL.NOISE,
                      var visited: Boolean = false,
                      var vectorRep: Array[Float] = null,
                      var mask: Boolean = false,

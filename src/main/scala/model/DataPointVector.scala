@@ -1,6 +1,6 @@
 package model
 
-case class DataPointVector(coordinates: Array[Float], id: Long, var label: Int = LABEL.UNDEFINED, var visited: Boolean = false) {
+case class DataPointVector(coordinates: Array[Float], id: Long, var label: Int = LABEL.NOISE, var visited: Boolean = false) {
   override def equals(obj: Any): Boolean = obj match {
     case that: DataPointVector => this.coordinates sameElements that.coordinates
     case _ => false
