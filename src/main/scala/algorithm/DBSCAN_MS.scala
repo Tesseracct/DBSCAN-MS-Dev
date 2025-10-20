@@ -3,8 +3,10 @@ package algorithm
 import model.{DataPoint, LABEL, MASK}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.{HashPartitioner, SparkContext}
+import org.apache.spark.{HashPartitioner, SparkContext, TaskContext}
 import utils.Distance.euclidean
+
+import java.time.LocalTime
 
 object DBSCAN_MS {
   /**
@@ -46,7 +48,7 @@ object DBSCAN_MS {
       .config("spark.executor.memory", "8g").getOrCreate()
     val sc = spark.sparkContext
     try {
-      val rdd = readData(sc, filepath, dataHasHeader, dataHasRightLabel)
+      val rdd = readData(sc, filepath, dataHasHeader, dataHasRightLabel).repartition(numberOfPartitions)
       val sampledData = rdd.sample(withReplacement = false, fraction = samplingDensity, seed = seed).collect()
       val clusteredRDD = dbscan_ms(sc, rdd, epsilon, minPts, seed, numberOfPivots, numberOfPartitions, sampledData)
       clusteredRDD.collect()
@@ -75,10 +77,9 @@ object DBSCAN_MS {
     require(numberOfPartitions == subspaces.length, "Something has gone very wrong. Number of partitions does not match number of subspaces.")
     val partitionedRDD = data.partitionBy(new HashPartitioner(numberOfPartitions)).map(_._2)
 
-    println("Start clustering partitions.")
     val clusteredRDD: RDD[DataPoint] = partitionedRDD.mapPartitions(iter => {
       val partition = iter.toArray
-      val rng = new scala.util.Random(seed)
+      val rng = new scala.util.Random(seed + TaskContext.getPartitionId())
       val dimension = rng.nextInt(partition.head.dimensions)
 
       val sortedPartition = partition.sortBy(point => point.vectorRep(dimension))

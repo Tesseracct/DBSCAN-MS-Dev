@@ -24,7 +24,7 @@ object kPA {
       if (inside(newPoint, subspace.outer)) {
         val pointWithMask =  if (inside(newPoint, subspace.inner)) newPoint else newPoint.withMask()
         pointWithMask.partition = i
-        returnList = returnList :+ (i, pointWithMask)
+        returnList = (i, pointWithMask) :: returnList
       }
     }
 
