@@ -14,7 +14,7 @@ object HF {
    * @return An array of selected pivot candidates.
    */
   def apply(dataset: Array[DataPoint],
-            numberOfPivotCandidates: Int,
+            numberOfPivotCandidates: Int = 40,
             distanceFunction: (Array[Float], Array[Float]) => Float,
             seed: Int): Array[DataPoint] = {
     execute(dataset, numberOfPivotCandidates, distanceFunction, seed)
@@ -24,6 +24,7 @@ object HF {
                             numberOfPivotCandidates: Int,
                             distanceFunction: (Array[Float], Array[Float]) => Float,
                             seed: Int): Array[DataPoint] = {
+    require(dataset.length > numberOfPivotCandidates, "Number of pivot candidates must be smaller than the dataset size!")
 
     val rng = new Random(seed)
     val pivotCandidates = new Array[DataPoint](numberOfPivotCandidates)

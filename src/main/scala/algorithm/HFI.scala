@@ -18,14 +18,14 @@ object HFI {
    * @return An array of selected pivots.
    */
   def apply(dataset: Array[DataPoint],
-            numberOfPivots: Int = 40,
+            numberOfPivots: Int,
             distanceFunction: (Array[Float], Array[Float]) => Float = euclidean,
             seed: Int = Random.nextInt()): Array[DataPoint] = {
     execute(dataset, numberOfPivots, distanceFunction, seed)
   }
 
   def execute(dataset: Array[DataPoint],
-            numberOfPivots: Int = 40,
+            numberOfPivots: Int,
             distanceFunction: (Array[Float], Array[Float]) => Float = euclidean,
             seed: Int = Random.nextInt()): Array[DataPoint] = {
     require(dataset.nonEmpty, "Dataset must not be empty")
@@ -34,7 +34,9 @@ object HFI {
     if (dataset.length >= 4500) println(s"Warning in $this! Sampled dataset has ${dataset.length} elements. " +
       s"Pivot selection for large datasets is expensive because of quadratic complexity.")
 
-    val candidates = HF(dataset, numberOfPivots, distanceFunction, seed)
+    // Standard count of pivot candidates set to 40 as per Efficient Metric Indexing for Similarity Search Section III B.
+    val numberOfPivotCandidates = if (numberOfPivots > 30) numberOfPivots * 2 else 40
+    val candidates = HF(dataset, numberOfPivotCandidates, distanceFunction, seed)
     var pivots = List[DataPoint]()
 
     for (_ <- 0 until numberOfPivots) {

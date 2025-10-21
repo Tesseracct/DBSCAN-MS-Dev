@@ -33,7 +33,7 @@ class HFITest() extends AnyFunSuite {
   test("Semantic HFI test") {
     val seed = 42
     val rng = new Random(seed)
-    val dataset: Array[DataPoint] = Array.fill(10)(DataPoint(Array.fill(2)(rng.nextFloat()), id = 0))
+    val dataset: Array[DataPoint] = Array.fill(50)(DataPoint(Array.fill(2)(rng.nextFloat()), id = 0))
 
     val numberOfPivots = 3
     val pivots: Array[DataPoint] = HFI(dataset, numberOfPivots, euclidean, seed)
