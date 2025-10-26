@@ -1,5 +1,7 @@
 package model
 
+import utils.Quickselect
+
 /**
  * Represents a subspace defined by a set of data points and their bounding box coordinates.
  *
@@ -18,8 +20,7 @@ case class Subspace (points: Array[DataPoint], bbCoords: Array[(Float, Float)], 
    * @return A tuple containing the two resulting subspaces.
    */
   def split(dimension: Int): (Subspace, Subspace) = {
-    // TODO: Sorting can be avoided by using Quickselect for average-case O(n)
-    val median = points.map(_.vectorRep(dimension)).sorted.apply(points.length / 2) // Choosing the floor here, as per k-d tree
+    val median = Quickselect.select(points.map(_.vectorRep(dimension)), points.length / 2)
     val (leftPoints, rightPoints) = points.partition(_.vectorRep(dimension) < median)
     val leftBB = bbCoords.updated(dimension, (bbCoords(dimension)._1, median))
     val rightBB = bbCoords.updated(dimension, (median, bbCoords(dimension)._2))
