@@ -1,4 +1,6 @@
-ThisBuild / version := "0.1.0-SNAPSHOT"
+ThisBuild / name := "DBSCAN-MS"
+
+ThisBuild / version := "0.1"
 
 ThisBuild / scalaVersion := "2.13.16"
 
@@ -15,7 +17,7 @@ libraryDependencies ++= Seq("org.apache.spark" %% "spark-core" % "4.0.1" % "prov
 // Assembly settings
 assembly / mainClass := Some("app.Main")
 assembly / assemblyJarName := "dbscan_ms.jar"
-
+assembly / test := {}
 assembly / assemblyMergeStrategy := {
   case PathList("META-INF", xs @ _*) => MergeStrategy.discard
   case _ => MergeStrategy.first

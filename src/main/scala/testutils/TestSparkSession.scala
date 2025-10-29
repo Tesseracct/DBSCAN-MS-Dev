@@ -8,7 +8,7 @@ object TestSparkSession {
     SparkSession.clearDefaultSession()
     SparkSession.builder()
       .appName("DBSCAN-MS Test")
-      .master("local[14]")
+      .master("local[14]") // * for all cores
       .config("spark.local.dir", "S:\\temp")
       .config("spark.driver.memory", "4g")
       .config("spark.driver.maxResultSize", "15g")

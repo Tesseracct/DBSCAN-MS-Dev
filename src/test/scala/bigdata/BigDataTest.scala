@@ -2,9 +2,7 @@ package bigdata
 
 import algorithm.DBSCAN_MS
 import org.scalatest.funsuite.AnyFunSuite
-import testutils.TestSparkSession
-import utils.GetResultLabels
-
+import testutils.{GetResultLabels, TestSparkSession}
 
 
 class BigDataTest extends AnyFunSuite{

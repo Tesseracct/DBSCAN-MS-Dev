@@ -2,8 +2,8 @@ package algorithm
 
 import imp.MutualInformation.normalizedMutualInfoScore
 import org.scalatest.funsuite.AnyFunSuite
-import testutils.TestSparkSession
-import utils.{GetResultLabels, Testing}
+import testutils.{GetResultLabels, TestSparkSession}
+import utils.Testing
 
 
 class DBSCAN_MSTest extends AnyFunSuite{
