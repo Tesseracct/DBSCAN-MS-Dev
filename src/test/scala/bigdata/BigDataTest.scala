@@ -13,7 +13,7 @@ class BigDataTest extends AnyFunSuite{
     val filepath = "data/densired_2.csv"
     val spark = TestSparkSession.getOrCreate()
     try {
-      val result = DBSCAN_MS.run(spark,
+      val result = DBSCAN_MS.runFromFile(spark,
         filepath,
         epsilon = 0.02f,
         minPts = 20,
@@ -37,7 +37,7 @@ class BigDataTest extends AnyFunSuite{
     val filepath = "data/densired_2_sampled50p.csv"
     val spark = TestSparkSession.getOrCreate()
     try {
-      val result = DBSCAN_MS.run(spark,
+      val result = DBSCAN_MS.runFromFile(spark,
         filepath,
         epsilon = 0.07f,
         minPts = 20,
@@ -59,7 +59,7 @@ class BigDataTest extends AnyFunSuite{
     val filepath = "data/moons_2500x2D.csv"
     val spark = TestSparkSession.getOrCreate()
     try {
-      val result = DBSCAN_MS.run(spark,
+      val result = DBSCAN_MS.runFromFile(spark,
         filepath,
         epsilon = 0.01f,
         minPts = 5,

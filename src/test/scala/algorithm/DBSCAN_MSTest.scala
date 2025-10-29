@@ -11,7 +11,7 @@ class DBSCAN_MSTest extends AnyFunSuite{
     val filepath = "data/dbscan_dataset_100x2D.csv"
     val spark = TestSparkSession.getOrCreate()
     try {
-      val result = DBSCAN_MS.run(spark,
+      val result = DBSCAN_MS.runFromFile(spark,
         filepath,
         epsilon = 1.5f,
         minPts = 5,
@@ -36,7 +36,7 @@ class DBSCAN_MSTest extends AnyFunSuite{
     val filepath = "data/moons_2500x2D.csv"
     val spark = TestSparkSession.getOrCreate()
     try {
-      val result = DBSCAN_MS.run(spark,
+      val result = DBSCAN_MS.runFromFile(spark,
         filepath,
         epsilon = 0.1f,
         minPts = 5,
@@ -61,7 +61,7 @@ class DBSCAN_MSTest extends AnyFunSuite{
     val filepath = "data/circles_2500x2D.csv"
     val spark = TestSparkSession.getOrCreate()
     try {
-      val result = DBSCAN_MS.run(spark,
+      val result = DBSCAN_MS.runFromFile(spark,
         filepath,
         epsilon = 0.1f,
         minPts = 5,
@@ -86,7 +86,7 @@ class DBSCAN_MSTest extends AnyFunSuite{
     val filepath = "data/blobs_1000x2D.csv"
     val spark = TestSparkSession.getOrCreate()
     try {
-      val result = DBSCAN_MS.run(spark,
+      val result = DBSCAN_MS.runFromFile(spark,
         filepath,
         epsilon = 1.3f,
         minPts = 5,
@@ -111,7 +111,7 @@ class DBSCAN_MSTest extends AnyFunSuite{
     val filepath = "data/combined_circles_moons.csv"
     val spark = TestSparkSession.getOrCreate()
     try {
-      val result = DBSCAN_MS.run(spark,
+      val result = DBSCAN_MS.runFromFile(spark,
         filepath,
         epsilon = 0.1f,
         minPts = 5,
@@ -136,7 +136,7 @@ class DBSCAN_MSTest extends AnyFunSuite{
     val filepath = "data/combined_circles_moons_noise.csv"
     val spark = TestSparkSession.getOrCreate()
     try {
-      val result = DBSCAN_MS.run(spark,
+      val result = DBSCAN_MS.runFromFile(spark,
         filepath,
         epsilon = 0.1f,
         minPts = 5,

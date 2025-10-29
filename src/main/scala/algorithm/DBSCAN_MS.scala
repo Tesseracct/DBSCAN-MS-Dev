@@ -10,43 +10,82 @@ import java.time.LocalTime
 
 object DBSCAN_MS {
   /**
-   * Executes the DBSCAN-MS clustering algorithm (Yang et al., 2019) on the given dataset using Spark.
-   * The algorithm proceeds in three stages: (1) partitioning the data into balanced subspaces via sampling,
-   * pivot selection, and k-d tree space division; (2) running local DBSCAN in each partition using a sliding
-   * window neighborhood query; and (3) merging local clusters into global clusters via a connected components graph.
+   * Convenience wrapper for [[run]] that reads the dataset from a file.
+   *
+   * This method performs the complete clustering pipeline:
+   * reading input data, executing the DBSCAN-MS algorithm,
+   * and collecting the clustered points to the driver.
    *
    * Input must be a CSV file of numeric vectors, optionally with a header row and/or ground-truth labels in the last column.
-   * The result is an array of `DataPoint` objects with assigned cluster IDs (globalCluster), where -1 denotes noise.
    *
+   * @param spark              The SparkSession to use for execution.
    * @param filepath           The path to the input file containing the data to be clustered.
    * @param epsilon            The maximum distance two points can be apart to be considered neighbours.
    * @param minPts             The minimum number of points required to form a dense region.
    * @param numberOfPivots     The number of pivots to be used for subspace decomposition and neighbourhood search optimization.
    * @param numberOfPartitions The number of partitions for data distribution. Must be <= 4096.
    * @param samplingDensity    The fraction of data used for sampling operations. E.g., 0.01 is 1% of the data (default: 0.001).
-   * @param seed               The random seed used for reproducibility of results (default: 42).
+   * @param seed               The random seed used for reproducibility of results. Default: `42`.
    * @param dataHasHeader      Indicates whether the input file contains a header row (default: false).
    * @param dataHasRightLabel  Indicates whether the input file contains ground truth labels for validation (default: false).
-   * @return An array of `DataPoint` objects representing the clustered data.
+   * @return An array of [[DataPoint]] objects representing the clustered data.
+   *
+   * @see [[run]] for the underlying algorithm.
    */
-  def run(spark: SparkSession,
-          filepath: String,
+  def runFromFile(spark: SparkSession,
+                  filepath: String,
+                  epsilon: Float,
+                  minPts: Int,
+                  numberOfPivots: Int,
+                  numberOfPartitions: Int,
+                  samplingDensity: Double = 0.001,
+                  seed: Int = 42,
+                  dataHasHeader: Boolean = false,
+                  dataHasRightLabel: Boolean = false): Array[DataPoint] = {
+    val sc = spark.sparkContext
+    val rdd = readData(sc, filepath, dataHasHeader, dataHasRightLabel).repartition(numberOfPartitions)
+    val clusteredRDD = run(sc,
+                          rdd,
+                          epsilon,
+                          minPts,
+                          numberOfPivots,
+                          numberOfPartitions,
+                          samplingDensity,
+                          seed)
+    clusteredRDD.collect()
+  }
+
+  /**
+   * Executes the DBSCAN-MS clustering algorithm (Yang et al., 2019) on the given dataset using Spark.
+   * The algorithm proceeds in three stages: (1) partitioning the data into balanced subspaces via sampling,
+   * pivot selection, and k-d tree space division; (2) running local DBSCAN in each partition using a sliding
+   * window neighborhood query; and (3) merging local clusters into global clusters via a connected components graph.
+   *
+   * The result is an RDD of [[DataPoint]] objects with assigned cluster IDs (globalCluster), where -1 denotes noise.
+   *
+   * @param sc                 The SparkContext to use for execution.
+   * @param rdd                The RDD containing the data to be clustered.
+   * @param epsilon            The maximum distance two points can be apart to be considered neighbours.
+   * @param minPts             The minimum number of points required to form a dense region.
+   * @param numberOfPivots     The number of pivots to be used for subspace decomposition and neighbourhood search optimization.
+   * @param numberOfPartitions The number of partitions for data distribution. Must be <= 4096.
+   * @param samplingDensity    The fraction of data used for sampling operations. E.g., 0.01 is 1% of the data (default: 0.001).
+   * @param seed               The random seed used for reproducibility of results. Default: `42`.
+   * @return An RDD of [[DataPoint]] objects representing the clustered data.
+   */
+  def run(sc: SparkContext,
+          rdd: RDD[DataPoint],
           epsilon: Float,
           minPts: Int,
           numberOfPivots: Int,
           numberOfPartitions: Int,
           samplingDensity: Double = 0.001,
-          seed: Int = 42,
-          dataHasHeader: Boolean = false,
-          dataHasRightLabel: Boolean = false): Array[DataPoint] = {
+          seed: Int = 42): RDD[DataPoint] = {
     require(numberOfPartitions < 4096, "Number of partitions must be < 2^12 (4096) because of how clusters are labeled.")
 
-    val sc = spark.sparkContext
-
-    val rdd = readData(sc, filepath, dataHasHeader, dataHasRightLabel).repartition(numberOfPartitions)
     val sampledData = rdd.sample(withReplacement = false, fraction = samplingDensity, seed = seed).collect()
     val clusteredRDD = dbscan_ms(sc, rdd, epsilon, minPts, seed, numberOfPivots, numberOfPartitions, sampledData)
-    clusteredRDD.collect()
+    clusteredRDD
   }
 
   private def dbscan_ms(sc: SparkContext,
@@ -105,7 +144,7 @@ object DBSCAN_MS {
     clustered.values.union(trueNoise)
   }
 
-  private def readData(sc: SparkContext, path: String, hasHeader: Boolean, hasRightLabel: Boolean): RDD[DataPoint] = {
+  def readData(sc: SparkContext, path: String, hasHeader: Boolean, hasRightLabel: Boolean): RDD[DataPoint] = {
     val rdd = sc.textFile(path).zipWithIndex()
     val rdd1 = if (hasHeader) rdd.filter(_._2 > 0) else rdd
     rdd1.map {case (line, index) => makeDataPoint(line, index, hasRightLabel)}
