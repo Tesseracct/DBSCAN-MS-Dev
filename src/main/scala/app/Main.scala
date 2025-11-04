@@ -1,6 +1,7 @@
 package app
 
 import algorithm.DBSCAN_MS
+import org.apache.spark.sql.SparkSession
 import testutils.GetResultLabels.printClusters
 import testutils.{GetResultLabels, TestSparkSession}
 
@@ -48,7 +49,7 @@ object Main {
              |Data Has RightLabel:  $dataHasRightLabel
            """.stripMargin)
 
-        val spark = TestSparkSession.getOrCreate()
+        val spark = SparkSession.builder().appName("DBSCAN-MS").getOrCreate()
 
         try {
           val start = System.nanoTime()
