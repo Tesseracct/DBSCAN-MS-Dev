@@ -37,37 +37,35 @@ object HFI {
     // Standard count of pivot candidates set to 40 as per Efficient Metric Indexing for Similarity Search, Section III B.
     val numberOfPivotCandidates = if (numberOfPivots > 30) numberOfPivots * 2 else 40
     val candidates = HF(dataset, numberOfPivotCandidates, distanceFunction, seed)
-    var pivots = List[DataPoint]()
+    val pivots = new Array[DataPoint](numberOfPivots)
 
-    for (_ <- 0 until numberOfPivots) {
+    for (i <- 0 until numberOfPivots) {
       var maxPrecision = Float.MinValue
       var bestCandidate: DataPoint = null
       var bestCandidateIndex = -1
 
       for (j <- candidates.indices) {
         if (candidates(j) != null) {
-          pivots = candidates(j) :: pivots
+          pivots(i) = candidates(j)
 
-          val newPrecision = newPivotSetPrecision(dataset, pivots)
+          val newPrecision = newPivotSetPrecision(dataset, pivots, i)
           if (newPrecision > maxPrecision) {
             maxPrecision = newPrecision
             bestCandidate = candidates(j)
             bestCandidateIndex = j
           }
-
-          pivots = pivots.tail
         }
       }
 
       if (bestCandidate != null) {
-        pivots = bestCandidate :: pivots
+        pivots(i) = bestCandidate
         candidates(bestCandidateIndex) = null
       } else {
         throw new RuntimeException("No valid pivot candidate found")
       }
     }
 
-    pivots.toArray
+    pivots
   }
 
   /**
@@ -78,9 +76,9 @@ object HFI {
    * @param pivots The pivots used for mapping the data points to the vector space. The last pivot is the new pivot candidate.
    * @return The average precision of the pivot selection.
    */
-  private[algorithm] def newPivotSetPrecision(dataset: Array[DataPoint], pivots: List[DataPoint]): Float = {
+  private[algorithm] def newPivotSetPrecision(dataset: Array[DataPoint], pivots: Array[DataPoint], pointer: Int): Float = {
     val opCardinality = dataset.length * (dataset.length - 1) / 2.0f
-    val mappedDataset = dataset.map(MapPointToVectorSpace(_, pivots))
+    val mappedDataset = dataset.map(MapPointToVectorSpace(_, pivots, pointer))
     var sum = 0.0f
     for (i <- dataset.indices) {
       for (j <- i + 1 until dataset.length) {
@@ -92,7 +90,7 @@ object HFI {
 
 
   // TODO: Consider sampled object pairs for large datasets.
-  private[algorithm] def DEPR_newPivotSetPrecision(objectPairs: Array[(DataPoint, DataPoint)], pivots: List[DataPoint]): Float = {
+  private[algorithm] def DEPR_newPivotSetPrecision(objectPairs: Array[(DataPoint, DataPoint)], pivots: Array[DataPoint]): Float = {
     objectPairs.map { case (a, b) =>
       L_infNorm(MapPointToVectorSpace(a, pivots), MapPointToVectorSpace(b, pivots)) / a.distance(b, euclidean)
     }.sum / objectPairs.length
@@ -106,7 +104,7 @@ object HFI {
    * @param b Second coordinates.
    * @return The L-infinity norm between the two data points.
    */
-  def L_infNorm(a: List[Float], b: List[Float]): Float = {
+  final def L_infNorm(a: Array[Float], b: Array[Float]): Float = {
     require(a.length == b.length, "Data points must have the same dimension")
     var i = 0
     var max = 0.0f

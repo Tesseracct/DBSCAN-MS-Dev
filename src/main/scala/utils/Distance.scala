@@ -12,7 +12,7 @@ case object Distance {
   }
   */
 
-  def euclidean(a: Array[Float], b: Array[Float]): Float = {
+  final def euclidean(a: Array[Float], b: Array[Float]): Float = {
     require(a.length == b.length, "Vectors must be of the same length")
     var i = 0
     var acc = 0.0f

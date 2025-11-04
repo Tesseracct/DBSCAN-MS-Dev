@@ -51,18 +51,18 @@ class HFITest() extends AnyFunSuite {
 
   // Test L_infNorm
   test("Test L_infNorm") {
-    val vec1 = List(1.0f, 2.0f, 3.0f)
-    val vec2 = List(4.0f, 0.0f, -1.0f)
+    val vec1 = Array(1.0f, 2.0f, 3.0f)
+    val vec2 = Array(4.0f, 0.0f, -1.0f)
     val expected1 = 4.0f // max(|1-4|, |2-0|, |3-(-1)|) = max(3, 2, 4) = 4
     val result1 = HFI.L_infNorm(vec1, vec2)
     assert(result1 == expected1, s"Expected $expected1 but got $result1")
 
-    val vec3 = List(0.0f, 0.0f, 0.0f, 0.0f)
+    val vec3 = Array(0.0f, 0.0f, 0.0f, 0.0f)
     val result2 = HFI.L_infNorm(vec3, vec3)
     assert(result2 == 0.0f, s"Expected 0.0 but got $result2")
 
-    val vec4 = List(-2.0f, -2.0f, -9.0f)
-    val vec5 = List(-5.0f, -3.0f, -1.5f)
+    val vec4 = Array(-2.0f, -2.0f, -9.0f)
+    val vec5 = Array(-5.0f, -3.0f, -1.5f)
     val expected3 = 7.5f // max(|-2+5|, |-2+3|, |-9+1.5|) = max(3, 1, 7.5) = 7.5
     val result3 = HFI.L_infNorm(vec4, vec5)
     assert(result3 == expected3, s"Expected $expected3 but got $result3")

@@ -20,4 +20,15 @@ object MapPointToVectorSpace {
     pivots.map(pivot => pivot.distance(point, euclidean))
   }
 
+  def apply(point: DataPoint, pivots: Array[DataPoint], pointer: Int): Array[Float] = {
+    var i = 0
+    val n = pointer
+    val result = new Array[Float](pivots.length)
+    while (i <= n) {
+      result(i) = pivots(i).distance(point, euclidean)
+      i += 1
+    }
+    result
+  }
+
 }
