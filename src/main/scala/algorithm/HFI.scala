@@ -37,8 +37,9 @@ object HFI {
     // Standard count of pivot candidates set to 40 as per Efficient Metric Indexing for Similarity Search, Section III B.
     val numberOfPivotCandidates = if (numberOfPivots > 30) numberOfPivots * 2 else 40
     val candidates = HF(dataset, numberOfPivotCandidates, distanceFunction, seed)
-    val pivots = new Array[DataPoint](numberOfPivots)
+    val distanceMatrix = computeDistanceMatrix(dataset, distanceFunction)
 
+    val pivots = new Array[DataPoint](numberOfPivots)
     for (i <- 0 until numberOfPivots) {
       var maxPrecision = Float.MinValue
       var bestCandidate: DataPoint = null
@@ -48,7 +49,7 @@ object HFI {
         if (candidates(j) != null) {
           pivots(i) = candidates(j)
 
-          val newPrecision = newPivotSetPrecision(dataset, pivots, i)
+          val newPrecision = newPivotSetPrecision(dataset, distanceMatrix, pivots, i)
           if (newPrecision > maxPrecision) {
             maxPrecision = newPrecision
             bestCandidate = candidates(j)
@@ -76,13 +77,16 @@ object HFI {
    * @param pivots The pivots used for mapping the data points to the vector space. The last pivot is the new pivot candidate.
    * @return The average precision of the pivot selection.
    */
-  private[algorithm] def newPivotSetPrecision(dataset: Array[DataPoint], pivots: Array[DataPoint], pointer: Int): Float = {
+  private[algorithm] def newPivotSetPrecision(dataset: Array[DataPoint],
+                                              distanceMatrix: Array[Array[Float]],
+                                              pivots: Array[DataPoint],
+                                              pointer: Int): Float = {
     val opCardinality = dataset.length * (dataset.length - 1) / 2.0f
     val mappedDataset = dataset.map(MapPointToVectorSpace(_, pivots, pointer))
     var sum = 0.0f
     for (i <- dataset.indices) {
       for (j <- i + 1 until dataset.length) {
-        sum += L_infNorm(mappedDataset(i), mappedDataset(j)) / dataset(i).distance(dataset(j), euclidean)
+        sum += L_infNorm(mappedDataset(i), mappedDataset(j)) / distanceMatrix(i)(j - i - 1)
       }
     }
     sum / opCardinality
@@ -141,4 +145,23 @@ object HFI {
     pairs.toArray
   }
 
+  /**
+   * Computes the pairwise distance matrix for a given dataset using a specified distance function.
+   *
+   * @param dataset The input array of DataPoint objects for which the pairwise distances will be computed.
+   * @param distanceFunction A function that computes the distance between two arrays of Float values.
+   * @return The upper triangle of the pairwise distance matrix.
+   */
+  def computeDistanceMatrix(dataset: Array[DataPoint], distanceFunction: (Array[Float], Array[Float]) => Float): Array[Array[Float]] = {
+    val distanceMatrix: Array[Array[Float]] = new Array[Array[Float]](dataset.length)
+    for (i <- dataset.indices) {
+      distanceMatrix(i) = new Array[Float](dataset.length - i - 1)
+    }
+    for (i <- dataset.indices) {
+      for (j <- i + 1 until dataset.length) {
+        distanceMatrix(i)(j - i - 1) = dataset(i).distance(dataset(j), distanceFunction)
+      }
+    }
+    distanceMatrix
+  }
 }
