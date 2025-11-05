@@ -42,8 +42,8 @@ object GetResultLabels {
       sortedResult.map(_._1)
     } else result
 
-    val points = r.map(p => (p.id, p.globalCluster)).distinct
-    val rawLabels = points.map(_._2)
+
+    val rawLabels = r.map(_.globalCluster)
 
     val labels = if (remappedLabels) {
       val newLabelMapping = rawLabels.distinct.filterNot(_ == -1).zipWithIndex.toMap

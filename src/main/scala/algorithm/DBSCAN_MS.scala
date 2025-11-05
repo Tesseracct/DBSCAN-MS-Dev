@@ -193,11 +193,28 @@ object DBSCAN_MS {
       point
     })
 
-    // Eliminate false noise, that is, points labeled as noise in one partition but are part of a cluster in another partition.
-    val clustered = mergedRDD.filter(_.globalCluster != -1).keyBy(_.id)
-    val noise = mergedRDD.filter(_.globalCluster == -1).keyBy(_.id)
-    val trueNoise = noise.subtractByKey(clustered).values
-    clustered.values.union(trueNoise)
+    // Eliminate duplicates
+    val duplicates = mergedRDD.filter(_.mask).collect()
+    val grouped: Map[Long, Array[DataPoint]] = duplicates.groupBy(_.id)
+    val representatives = new Array[DataPoint](grouped.size)
+    var i = 0
+    for ((id, points) <- grouped) {
+      var j = 0
+      while (representatives(i) == null && j < points.length) {
+        if (points(j).globalCluster != -1) representatives(i) = points(j)
+        j += 1
+      }
+      if (representatives(i) == null) representatives(i) = points.head
+      i += 1
+    }
+    val bcRepresentatives = sc.broadcast(representatives)
+    mergedRDD.mapPartitions(iter => {
+      val partition = iter.toArray
+      val thisPartitionID = partition.head.partition
+      val toFilter = bcRepresentatives.value.filter(_.partition != thisPartitionID).map(_.id).toSet
+      partition.filterNot(point => toFilter.contains(point.id)).iterator
+    })
+
   }
 
   /**

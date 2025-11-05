@@ -149,6 +149,7 @@ class DBSCAN_MSTest extends AnyFunSuite{
       val (originalData, labelsTrue) = Testing.splitData(Testing.readDataToString(filepath, header = true))
       val predLabels = GetResultLabels(result, originalDataset = Option(originalData))
 
+      assert(result.length == 5010)
       assert(predLabels.count(_ == -1) == 10)
       assert(normalizedMutualInfoScore(labelsTrue, predLabels) == 1.0d)
       assert(predLabels.distinct.length == 5)
