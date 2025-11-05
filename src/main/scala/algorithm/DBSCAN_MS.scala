@@ -176,7 +176,6 @@ object DBSCAN_MS {
 
 
     // As per DBSCAN-MS, Section VII: "we only need to transfer the core and border objects in the margins"
-    // TODO: Check if Mask is necessary: no conditional for SPACE_INNER? => Margin conditional could be replaced by bool
     val mergingCandidates = clusteredRDD.filter(point =>
       (point.mask == MASK.MARGIN_OUTER || point.mask == MASK.MARGIN_INNER) &&
         (point.label == LABEL.CORE || point.label == LABEL.BORDER)).collect()
@@ -197,7 +196,7 @@ object DBSCAN_MS {
 
     // Eliminate duplicates
     // Group duplicates by ID
-    val duplicates = mergedRDD.filter(_.mask).collect()
+    val duplicates = mergedRDD.filter(point => point.mask == MASK.MARGIN_INNER || point.mask == MASK.MARGIN_OUTER).collect()
     val grouped: Map[Long, Array[DataPoint]] = duplicates.groupBy(_.id)
 
     // Find representative points for each duplicate
