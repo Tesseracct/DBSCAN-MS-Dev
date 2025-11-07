@@ -4,7 +4,7 @@ import model.DataPoint
 import org.scalatest.funsuite.AnyFunSuite
 
 import scala.util.Random
-import utils.Distance.euclidean
+import utils.EuclideanDistance.distance
 
 class HFITest() extends AnyFunSuite {
   // Test HFI
@@ -14,7 +14,7 @@ class HFITest() extends AnyFunSuite {
     val dataset: Array[DataPoint] = Array.fill(1000)(DataPoint(Array.fill(5)(rng.nextFloat()), id = 0))
 
     val numberOfPivots = 10
-    val pivots: Array[DataPoint] = HFI(dataset, numberOfPivots, euclidean, seed)
+    val pivots: Array[DataPoint] = HFI(dataset, numberOfPivots, seed)
 
     // Check that the correct number of pivots is returned
     assert(pivots.length == numberOfPivots, s"Expected $numberOfPivots pivots, but got ${pivots.length}")
@@ -36,7 +36,7 @@ class HFITest() extends AnyFunSuite {
     val dataset: Array[DataPoint] = Array.fill(50)(DataPoint(Array.fill(2)(rng.nextFloat()), id = 0))
 
     val numberOfPivots = 3
-    val pivots: Array[DataPoint] = HFI(dataset, numberOfPivots, euclidean, seed)
+    val pivots: Array[DataPoint] = HFI(dataset, numberOfPivots, seed)
 
     // Print the selected pivots for manual inspection
     println("Selected pivots:")

@@ -3,7 +3,7 @@ package bigdata
 import algorithm.HFI
 import model.DataPoint
 import org.scalatest.funsuite.AnyFunSuite
-import utils.Distance.euclidean
+import utils.EuclideanDistance.distance
 
 import scala.util.Random
 
@@ -20,7 +20,7 @@ class HFIPerformance extends AnyFunSuite{
     val dataset = cleanedData.zipWithIndex.map { case (row, id) => DataPoint(row, id) }
 
     val start = System.currentTimeMillis()
-    val result = HFI(dataset, 10, euclidean, seed)
+    val result = HFI(dataset, 10, seed)
     val end = System.currentTimeMillis()
     println(s"Time in seconds: ${(end - start) / 1000.0}")
 

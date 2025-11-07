@@ -1,7 +1,6 @@
 package algorithm
 
 import model.DataPoint
-import utils.Distance.euclidean
 import utils.TinyArrayBuffer
 
 import scala.collection.mutable.ArrayBuffer
@@ -37,7 +36,7 @@ object SWNQA {
       var u = l + 1
       while (u < points.length && points(u).vectorRep(dimension) - lPoint.vectorRep(dimension) <= epsilon) {
         val uPoint = points(u)
-        if (inSearchRegion(srLowerBound, srUpperBound, uPoint) && lPoint.distance(uPoint, euclidean) <= epsilon) {
+        if (inSearchRegion(srLowerBound, srUpperBound, uPoint) && lPoint.distance(uPoint) <= epsilon) {
           neighbourhoods(l) += u
           neighbourhoods(u) += l
         }

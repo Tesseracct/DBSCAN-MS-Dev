@@ -7,19 +7,18 @@ object IntrinsicDimensionality {
    * Computes the estimated intrinsic dimensionality of a given sample of the dataset.
    *
    * @param sampleDataset    The dataset consisting of an array of DataPoint objects.
-   * @param distanceFunction The distance function.
    * @return The estimated intrinsic dimensionality of the dataset.
    */
-  def apply(sampleDataset: Array[DataPoint], distanceFunction: (Array[Float], Array[Float]) => Float): Double = {
-    execute(sampleDataset, distanceFunction)
+  def apply(sampleDataset: Array[DataPoint]): Double = {
+    execute(sampleDataset)
   }
 
-  final def execute(sampleDataset: Array[DataPoint], distanceFunction: (Array[Float], Array[Float]) => Float): Double = {
+  final def execute(sampleDataset: Array[DataPoint]): Double = {
     val distances: Array[Double] = new Array[Double]((sampleDataset.length * (sampleDataset.length - 1))/ 2)
     var pointer = 0
     for (i <- sampleDataset.indices) {
       for (j <- i + 1 until sampleDataset.length) {
-        distances(pointer) = sampleDataset(i).distance(sampleDataset(j), distanceFunction)
+        distances(pointer) = sampleDataset(i).distance(sampleDataset(j))
         pointer += 1
       }
     }

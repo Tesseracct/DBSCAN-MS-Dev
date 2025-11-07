@@ -1,7 +1,6 @@
 package algorithm
 
 import model.DataPoint
-import utils.Distance.euclidean
 import utils.MapPointToVectorSpace
 
 import scala.collection.parallel.CollectionConverters.IterableIsParallelizable
@@ -14,21 +13,18 @@ object HFI {
    *
    * @param dataset The sampled dataset from which to select pivots.
    * @param numberOfPivots The number of pivots to select.
-   * @param distanceFunction The distance function to use for distance calculations.
    * @param seed Random seed for reproducibility.
    * @return An array of selected pivots.
    */
   def apply(dataset: Array[DataPoint],
             numberOfPivots: Int,
-            distanceFunction: (Array[Float], Array[Float]) => Float = euclidean,
             seed: Int = Random.nextInt()): Array[DataPoint] = {
-    execute(dataset, numberOfPivots, distanceFunction, seed)
+    execute(dataset, numberOfPivots, seed)
   }
 
   def execute(dataset: Array[DataPoint],
-            numberOfPivots: Int,
-            distanceFunction: (Array[Float], Array[Float]) => Float = euclidean,
-            seed: Int = Random.nextInt()): Array[DataPoint] = {
+              numberOfPivots: Int,
+              seed: Int = Random.nextInt()): Array[DataPoint] = {
     require(dataset.nonEmpty, "Dataset must not be empty")
     require(numberOfPivots >= 2, "Number of pivots must be at least 2")
     require(numberOfPivots <= dataset.length, "Number of pivots must not exceed dataset size")
@@ -37,8 +33,8 @@ object HFI {
 
     // Standard count of pivot candidates set to 40 as per Efficient Metric Indexing for Similarity Search, Section III B.
     val numberOfPivotCandidates = if (numberOfPivots > 30) numberOfPivots * 2 else 40
-    val candidates = HF(dataset, numberOfPivotCandidates, distanceFunction, seed)
-    val distanceMatrix = computeDistanceMatrix(dataset, distanceFunction)
+    val candidates = HF(dataset, numberOfPivotCandidates, seed)
+    val distanceMatrix = computeDistanceMatrix(dataset)
 
     val pivots = new Array[DataPoint](numberOfPivots)
     for (i <- 0 until numberOfPivots) {
@@ -94,7 +90,7 @@ object HFI {
   // TODO: Consider sampled object pairs for large datasets.
   private[algorithm] def DEPR_newPivotSetPrecision(objectPairs: Array[(DataPoint, DataPoint)], pivots: Array[DataPoint]): Float = {
     objectPairs.map { case (a, b) =>
-      L_infNorm(MapPointToVectorSpace(a, pivots), MapPointToVectorSpace(b, pivots)) / a.distance(b, euclidean)
+      L_infNorm(MapPointToVectorSpace(a, pivots), MapPointToVectorSpace(b, pivots)) / a.distance(b)
     }.sum / objectPairs.length
   }
 
@@ -147,17 +143,16 @@ object HFI {
    * Computes the pairwise distance matrix for a given dataset using a specified distance function.
    *
    * @param dataset The input array of DataPoint objects for which the pairwise distances will be computed.
-   * @param distanceFunction A function that computes the distance between two arrays of Float values.
    * @return The upper triangle of the pairwise distance matrix.
    */
-  def computeDistanceMatrix(dataset: Array[DataPoint], distanceFunction: (Array[Float], Array[Float]) => Float): Array[Array[Float]] = {
+  def computeDistanceMatrix(dataset: Array[DataPoint]): Array[Array[Float]] = {
     val distanceMatrix: Array[Array[Float]] = new Array[Array[Float]](dataset.length)
     for (i <- dataset.indices) {
       distanceMatrix(i) = new Array[Float](dataset.length - i - 1)
     }
     for (i <- dataset.indices) {
       for (j <- i + 1 until dataset.length) {
-        distanceMatrix(i)(j - i - 1) = dataset(i).distance(dataset(j), distanceFunction)
+        distanceMatrix(i)(j - i - 1) = dataset(i).distance(dataset(j))
       }
     }
     distanceMatrix

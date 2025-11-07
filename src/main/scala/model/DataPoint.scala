@@ -1,5 +1,8 @@
 package model
 
+import model.DataPoint.dist
+import utils.EuclideanDistance
+
 import java.util
 
 
@@ -26,8 +29,8 @@ case class DataPoint(data: Array[Float],
                                   s"vectorRep=${if (vectorRep != null) vectorRep.mkString(", ")}, " +
                                   s"mask=$mask, cluster=$localCluster, partition=$partition, globalCluster=$globalCluster)"
 
-  def distance(other: DataPoint, distanceFunction: (Array[Float], Array[Float]) => Float): Float = {
-    distanceFunction(this.data, other.data)
+  final def distance(other: DataPoint): Float = {
+    dist(this.data, other.data)
   }
 
   /**
@@ -51,4 +54,8 @@ case class DataPoint(data: Array[Float],
    * @note '''We're only making shallow copies, therefore assuming data & vectorRep won't be changed after withMask is called'''
    */
   def withMask(mask: Int): DataPoint = this.copy(mask = mask)
+}
+
+object DataPoint {
+  val dist: (Array[Float], Array[Float]) => Float = EuclideanDistance.distance
 }
