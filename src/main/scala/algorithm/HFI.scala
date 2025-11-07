@@ -49,10 +49,12 @@ object HFI {
       }
 
       val (maxPrecision, bestCandidate, bestCandidateIndex) =
-        candidates.view.zipWithIndex.collect { case (c, j) if c != null => (c, j) }
-                                    .par
-                                    .map { case (c, j) => (precisionWithTrial(c), c, j) }
-                                    .maxBy(_._1)
+        candidates.indices.view.filter(candidates(_) != null)
+                                .par
+                                .map { j =>
+                                  val c = candidates(j)
+                                  (precisionWithTrial(c), c, j) }
+                                .maxBy(_._1)
 
       if (bestCandidate != null) {
         pivots(i) = bestCandidate
