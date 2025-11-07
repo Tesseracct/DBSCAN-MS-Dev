@@ -4,6 +4,7 @@ import model.DataPoint
 import utils.Distance.euclidean
 import utils.MapPointToVectorSpace
 
+import scala.collection.parallel.CollectionConverters.IterableIsParallelizable
 import scala.util.Random
 
 
@@ -41,22 +42,17 @@ object HFI {
 
     val pivots = new Array[DataPoint](numberOfPivots)
     for (i <- 0 until numberOfPivots) {
-      var maxPrecision = Float.MinValue
-      var bestCandidate: DataPoint = null
-      var bestCandidateIndex = -1
-
-      for (j <- candidates.indices) {
-        if (candidates(j) != null) {
-          pivots(i) = candidates(j)
-
-          val newPrecision = newPivotSetPrecision(dataset, distanceMatrix, pivots, i)
-          if (newPrecision > maxPrecision) {
-            maxPrecision = newPrecision
-            bestCandidate = candidates(j)
-            bestCandidateIndex = j
-          }
-        }
+      def precisionWithTrial(trial: DataPoint): Float = {
+        val pivCopy = pivots.clone()
+        pivCopy(i) = trial
+        newPivotSetPrecision(dataset, distanceMatrix, pivCopy, i)
       }
+
+      val (maxPrecision, bestCandidate, bestCandidateIndex) =
+        candidates.view.zipWithIndex.collect { case (c, j) if c != null => (c, j) }
+                                    .par
+                                    .map { case (c, j) => (precisionWithTrial(c), c, j) }
+                                    .maxBy(_._1)
 
       if (bestCandidate != null) {
         pivots(i) = bestCandidate
