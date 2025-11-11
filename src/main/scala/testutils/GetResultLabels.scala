@@ -1,8 +1,11 @@
 package testutils
 
 import model.DataPoint
+import org.apache.log4j.Logger
 
 object GetResultLabels {
+  private val log = org.apache.log4j.LogManager.getLogger(GetResultLabels.getClass)
+
   /**
    * Extracts the global cluster labels from a given array of clustered [[DataPoint]]s,
    * optionally reorders them to match the original dataset, remaps them to a contiguous
@@ -66,7 +69,7 @@ object GetResultLabels {
   def printClusters(result: Array[DataPoint]): Unit = {
     val predLabels = GetResultLabels(result)
     val groupedLabels = predLabels.groupBy(identity)
-    groupedLabels.foreach(x => println(s"Cluster ${x._1} has ${x._2.length} points"))
-    println(s"Total clusters (including noise): ${groupedLabels.size}")
+    groupedLabels.foreach(x => log.debug(s"Cluster ${x._1} has ${x._2.length} points"))
+    log.info(s"Total clusters (including noise): ${groupedLabels.size}")
   }
 }

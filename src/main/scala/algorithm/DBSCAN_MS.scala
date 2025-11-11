@@ -9,6 +9,7 @@ import utils.IntrinsicDimensionality
 import java.time.LocalTime
 
 object DBSCAN_MS {
+  private val log = org.apache.log4j.LogManager.getLogger(DBSCAN_MS.getClass)
   /**
    * Convenience wrapper for [[run]] that reads the dataset from a file.
    *
@@ -96,7 +97,7 @@ object DBSCAN_MS {
     val sc = spark.sparkContext
     val rdd = readData(sc, filepath, dataHasHeader, dataHasRightLabel).cache()
     val numPivots = if (numberOfPivots == -1) estimatePivotNumber(rdd, samplingDensity, seed) else numberOfPivots
-    println(rdd.count())
+    log.info(rdd.count() + " data points loaded")
 
     val start = System.currentTimeMillis()
     val count = run(sc,
@@ -108,9 +109,9 @@ object DBSCAN_MS {
                     samplingDensity,
                     seed).count()
     val end = System.currentTimeMillis()
-    println(f"Count: $count")
+    log.info(f"Count: $count")
     val duration = (end - start) / 1000D / 60D
-    println(f"DBSCAN-MS completed in ${duration.toInt} minutes.")
+    log.info(f"DBSCAN-MS completed in ${duration.toInt} minutes.")
   }
 
   /**

@@ -8,6 +8,7 @@ import scala.util.Random
 
 
 object HFI {
+  private val log = org.apache.log4j.LogManager.getLogger(HFI.getClass)
   /**
    * Selects pivots using the Hull Foci Algorithm (HFI).
    *
@@ -28,7 +29,7 @@ object HFI {
     require(dataset.nonEmpty, "Dataset must not be empty")
     require(numberOfPivots >= 2, "Number of pivots must be at least 2")
     require(numberOfPivots <= dataset.length, "Number of pivots must not exceed dataset size")
-    if (dataset.length >= 4500) println(s"Warning in $this! Sampled dataset has ${dataset.length} elements. " +
+    if (dataset.length >= 4500) log.warn(s"Warning in $this! Sampled dataset has ${dataset.length} elements. " +
       s"Pivot selection for large datasets is expensive because of quadratic complexity.")
 
     // Standard count of pivot candidates set to 40 as per Efficient Metric Indexing for Similarity Search, Section III B.
@@ -124,7 +125,7 @@ object HFI {
    * @return An array of unique pairs of data points.
    */
   def samplePairs(dataset: Array[DataPoint], sampleSize: Int, seed: Int): Array[(DataPoint, DataPoint)] = {
-    if(dataset.length > sampleSize) println(s"Warning in $this! Dataset should be larger than sample size!") // Not strictly necessary but guards against weird cases
+    if(dataset.length > sampleSize) log.warn(s"Warning in $this! Dataset should be larger than sample size!") // Not strictly necessary but guards against weird cases
     val rng = new Random(seed)
     var pairs = Set[(DataPoint, DataPoint)]()
 
