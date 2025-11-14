@@ -43,8 +43,8 @@ object SWNQA {
         u += 1
       }
 
-      // If lPoint has < minPts neighbours, we can delete its neighbourhood to save memory
-      if (neighbourhoods(l).length < minPts) neighbourhoods(l) = new TinyArrayBuffer()
+      // If lPoint has < minPts - 1 neighbours, we can delete its neighbourhood to save memory
+      if (neighbourhoods(l).length < minPts - 1) neighbourhoods(l) = new TinyArrayBuffer()
     }
     neighbourhoods.map(_.toArray)
   }

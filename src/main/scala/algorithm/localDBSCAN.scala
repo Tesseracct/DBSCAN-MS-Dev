@@ -24,7 +24,7 @@ object localDBSCAN {
         point.visited = true
 
         val neighbourhood = neighbourhoods(i)
-        if (neighbourhood.length >= minPts) {
+        if (neighbourhood.length + 1 >= minPts) {
           currentCluster += 1
           point.localCluster = currentCluster
           point.label = LABEL.CORE
@@ -38,7 +38,7 @@ object localDBSCAN {
             if (!currentPoint.visited) {
               currentPoint.visited = true
               val currentNeighbourhood = neighbourhoods(currentIndex)
-              if (currentNeighbourhood.length >= minPts) {
+              if (currentNeighbourhood.length + 1 >= minPts) {
                 currentPoint.label = LABEL.CORE
                 queue.enqueueAll(currentNeighbourhood)
               } else {
