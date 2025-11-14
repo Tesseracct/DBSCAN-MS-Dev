@@ -87,14 +87,6 @@ object HFI {
     sum / opCardinality
   }
 
-
-  // TODO: Consider sampled object pairs for large datasets.
-  private[algorithm] def DEPR_newPivotSetPrecision(objectPairs: Array[(DataPoint, DataPoint)], pivots: Array[DataPoint]): Float = {
-    objectPairs.map { case (a, b) =>
-      L_infNorm(MapPointToVectorSpace(a, pivots), MapPointToVectorSpace(b, pivots)) / a.distance(b)
-    }.sum / objectPairs.length
-  }
-
   /**
    * Computes the L-infinity norm (Chebyshev distance) between two data points.
    *
@@ -114,30 +106,6 @@ object HFI {
       i += 1
     }
     max
-  }
-
-  /**
-   * Samples unique pairs of data points from the dataset.
-   *
-   * @param dataset The dataset from which to sample pairs.
-   * @param sampleSize The number of unique pairs to sample.
-   * @param seed Random seed for reproducibility.
-   * @return An array of unique pairs of data points.
-   */
-  def samplePairs(dataset: Array[DataPoint], sampleSize: Int, seed: Int): Array[(DataPoint, DataPoint)] = {
-    if(dataset.length > sampleSize) log.warn(s"Warning in $this! Dataset should be larger than sample size!") // Not strictly necessary but guards against weird cases
-    val rng = new Random(seed)
-    var pairs = Set[(DataPoint, DataPoint)]()
-
-    while (pairs.size < sampleSize) {
-      val a = dataset(rng.nextInt(dataset.length))
-      val b = dataset(rng.nextInt(dataset.length))
-      if (a != b) {
-        val pair = if (a.id < b.id) (a, b) else (b, a)
-        pairs += pair
-      }
-    }
-    pairs.toArray
   }
 
   /**

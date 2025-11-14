@@ -68,22 +68,4 @@ class HFITest() extends AnyFunSuite {
     assert(result3 == expected3, s"Expected $expected3 but got $result3")
   }
 
-
-  // Test samplePairs
-  test("Test samplePairs") {
-    val seed = 42
-    val rng = new Random(seed)
-    val dataset: Array[DataPoint] = Array.fill(100)(DataPoint(Array.fill(3)(rng.nextFloat()), id = 0))
-
-    val numberOfPairs = 20
-    val pairs: Array[(DataPoint, DataPoint)] = HFI.samplePairs(dataset, numberOfPairs, seed)
-
-    assert(pairs.length == numberOfPairs, s"Expected $numberOfPairs pairs, but got ${pairs.length}")
-
-    pairs.foreach { case (dp1, dp2) =>
-      assert(dp1 != dp2, "A pair contains the same DataPoint twice")
-    }
-  }
-
-
 }

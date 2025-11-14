@@ -6,7 +6,6 @@ import org.jgrapht.graph.{DefaultEdge, SimpleGraph}
 
 import scala.jdk.CollectionConverters.{ListHasAsScala, SetHasAsScala}
 
-//TODO: Consider optimization here, how expensive is asScala?
 object CCGMA {
   /**
    * Applies the CCGMA merging algorithm to the merging candidates.
