@@ -197,10 +197,11 @@ object DBSCAN_MS {
         (point.label == LABEL.CORE || point.label == LABEL.BORDER)).collect()
     val bcGlobalClusterMappings = sc.broadcast(CCGMA(mergingCandidates))
 
+    // Filter duplicates and
     // Merge local clusters into global clusters. If one cluster sits entirely in one partition,
     // we give it a unique ID by encoding the partition number in the high bits.
     val bitOffset = 19
-    val mergedRDD = clusteredRDD.map(point => {
+    clusteredRDD.filter(_.mask != MASK.MARGIN_OUTER).map(point => {
       bcGlobalClusterMappings.value.get((point.partition, point.localCluster)) match {
         case Some(cluster) => point.globalCluster = cluster
         case None => point.globalCluster = if (point.localCluster == -1) -1 else {
@@ -209,9 +210,6 @@ object DBSCAN_MS {
       }
       point
     })
-
-    // Eliminate duplicates
-    mergedRDD.filter(_.mask != MASK.MARGIN_OUTER)
   }
 
   /**
