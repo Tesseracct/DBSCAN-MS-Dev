@@ -16,7 +16,7 @@ module purge
 module load openjdk/21.0.2
 
 # Capture arguments to forward to inner script
-DATASET=$1; DIM=$2; EPS=$3; MINPTS=$4; NUM_PARTITIONS=$5; EXP_DIR=$6; OUT=$7; RHO=$8
+DATASET=$1; DIM=$2; EPS=$3; MINPTS=$4; NUM_PARTITIONS=$5; EXP_DIR=$6; NUM_PIVOT=$7; NUM_PIVOT=$8
 
 # Set spark env
 SPARK_EXECUTOR_MEMORY=100g
@@ -36,7 +36,7 @@ fi
 # Launch one task per node (task layout already allocated). Use --label for clearer logs.
 # Forward positional args.
 set -e
-bash run_inner.sh "$DATASET" "$DIM" "$EPS" "$MINPTS" "$NUM_PARTITIONS" "$EXP_DIR" "$OUT" "$RHO"
+bash run_inner.sh "$DATASET" "$DIM" "$EPS" "$MINPTS" "$NUM_PARTITIONS" "$EXP_DIR" "$NUM_PIVOT" "$NUM_PIVOT"
 rc=$?
 set +e
 echo "[ORCH] srun completed rc=$rc"

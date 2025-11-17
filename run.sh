@@ -6,8 +6,8 @@ EPS=${3}
 MINPTS=${4}
 NUM_PARTITIONS=${5}
 EXP_DIR=${6}
-RHO="0.01"
-OUT="out.csv"
+NUM_PIVOT=2*$DIM
+SAMPLING_DENSITY=0.0075
 
 # Check if all arguments are provided
 if [ -z "$DATASET" ] || [ -z "$DIM" ] || [ -z "$EPS" ] || [ -z "$MINPTS" ] || [ -z "$NUM_PARTITIONS" ] || [ -z "$EXP_DIR" ]; then
@@ -15,7 +15,7 @@ if [ -z "$DATASET" ] || [ -z "$DIM" ] || [ -z "$EPS" ] || [ -z "$MINPTS" ] || [ 
   exit 1
 fi
 
-sbatch run.slurm "$DATASET" "$DIM" "$EPS" "$MINPTS" "$NUM_PARTITIONS" "$EXP_DIR" "$OUT" "$RHO"
+sbatch run.slurm "$DATASET" "$DIM" "$EPS" "$MINPTS" "$NUM_PARTITIONS" "$EXP_DIR" "$NUM_PIVOT" "$SAMPLING_DENSITY"
 
 exit 0
 
