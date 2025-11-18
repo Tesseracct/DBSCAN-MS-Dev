@@ -13,11 +13,11 @@ class BigDataTest extends AnyFunSuite{
     try {
       val result = DBSCAN_MS.runFromFile(spark,
         filepath,
-        epsilon = 0.02f,
+        epsilon = 0.05f,
         minPts = 20,
         numberOfPivots = 10,
         numberOfPartitions = 10,
-        samplingDensity = 0.0005f,
+        samplingDensity = 0.001f,
         dataHasHeader = false,
         dataHasRightLabel = false)
 
@@ -59,7 +59,7 @@ class BigDataTest extends AnyFunSuite{
     try {
       val result = DBSCAN_MS.runFromFile(spark,
         filepath,
-        epsilon = 0.01f,
+        epsilon = 0.1f,
         minPts = 5,
         numberOfPivots = 10,
         numberOfPartitions = 10,
