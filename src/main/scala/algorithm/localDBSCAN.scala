@@ -29,7 +29,8 @@ object localDBSCAN {
           point.localCluster = currentCluster
           point.label = LABEL.CORE
 
-          val queue = mutable.Queue[Int]().enqueueAll(neighbourhood)
+          val queue = mutable.Queue[Int]()
+          for (p <- neighbourhood) if (!points(p).visited || points(p).label == LABEL.NOISE) queue.enqueue(p)
           while (queue.nonEmpty) {
             val currentIndex = queue.dequeue()
             val currentPoint = points(currentIndex)
@@ -40,7 +41,7 @@ object localDBSCAN {
               val currentNeighbourhood = neighbourhoods(currentIndex)
               if (currentNeighbourhood.length + 1 >= minPts) {
                 currentPoint.label = LABEL.CORE
-                queue.enqueueAll(currentNeighbourhood)
+                for (p <- currentNeighbourhood) if (!points(p).visited || points(p).label == LABEL.NOISE) queue.enqueue(p)
               } else {
                 currentPoint.label = LABEL.BORDER
               }
