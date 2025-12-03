@@ -8,7 +8,7 @@ package utils
  *
  * @param initialCapacity The initial capacity of the buffer. (default: 16).
  */
-class TinyArrayBuffer(initialCapacity: Int = 16) {
+final class TinyArrayBuffer(initialCapacity: Int = 16) {
   private final val maxArraySize = Int.MaxValue - 8
   private var elems: Array[Int] = new Array[Int](initialCapacity)
   private var elemCounter: Int = 0
