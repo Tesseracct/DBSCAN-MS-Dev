@@ -25,20 +25,17 @@ object CCGMA {
 
     val graph = new SimpleGraph[(Int, Int), DefaultEdge](classOf[DefaultEdge])
     for ((_, mObjects) <- mergingObjects) {
-      val localClusterToMergingObject = mObjects.map(x => ((x.partition, x.localCluster), x)).toMap
-      val localResults = localClusterToMergingObject.keys.toArray.distinct
-      if (localResults.length >= 2) {
-        for (i <- localResults.indices; j <- i + 1 until localResults.length) {
-          val c1 = localResults(i)
-          val c2 = localResults(j)
+      for (i <- mObjects.indices; j <- i + 1 until mObjects.length) {
+        val io = mObjects(i)
+        val jo = mObjects(j)
 
-          // This is technically unsafe, but if the Map returns null something catastrophic has failed anyway.
-          if (localClusterToMergingObject.getOrElse(c1, null).label == LABEL.CORE
-            || localClusterToMergingObject.getOrElse(c2, null).label == LABEL.CORE) {
-            graph.addVertex(c1)
-            graph.addVertex(c2)
-            graph.addEdge(c1, c2)
-          }
+        if (io.label == LABEL.CORE || jo.label == LABEL.CORE){
+          val c1 = (io.partition, io.localCluster)
+          val c2 = (jo.partition, jo.localCluster)
+
+          graph.addVertex(c1)
+          graph.addVertex(c2)
+          graph.addEdge(c1, c2)
         }
       }
     }
