@@ -14,23 +14,24 @@ object IntrinsicDimensionality {
   }
 
   final def execute[A](sampleDataset: Array[DataPoint[A]])(implicit m: Metric[A]): Double = {
-    val distances: Array[Double] = new Array[Double]((sampleDataset.length * (sampleDataset.length - 1))/ 2)
-    var pointer = 0
+    val n = sampleDataset.length
+
+    var k = 0L
+    var mean = 0.0
+    var m2 = 0.0
+
     for (i <- sampleDataset.indices) {
-      for (j <- i + 1 until sampleDataset.length) {
-        distances(pointer) = sampleDataset(i).distance(sampleDataset(j))
-        pointer += 1
+      for (j <- i + 1 until n) {
+        val x = sampleDataset(i).distance(sampleDataset(j))
+        k += 1
+        val delta = x - mean
+        mean += delta / k
+        val delta2 = x - mean
+        m2 += delta * delta2
       }
     }
-    val mean: Double = distances.sum / distances.length
 
-    var sum: Double = 0.0
-    for (d <- distances) {
-      val diff = d - mean
-      sum += diff * diff
-    }
-    val variance: Double = sum / distances.length
-
+    val variance: Double = m2 / (k - 1).toDouble
     Math.pow(mean, 2) / (2 * variance)
   }
 }
