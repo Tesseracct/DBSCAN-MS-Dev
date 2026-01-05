@@ -226,7 +226,7 @@ object DBSCAN_MS {
    * @return An RDD of [[DataPoint]] objects representing the parsed dataset.
    */
   def readData(sc: SparkContext, path: String, hasHeader: Boolean, hasRightLabel: Boolean): RDD[DataPoint] = {
-    val rdd = sc.textFile(path).zipWithIndex()
+    val rdd = sc.textFile(path).coalesce(1).zipWithIndex()
     val rdd1 = if (hasHeader) rdd.filter(_._2 > 0) else rdd
     rdd1.map { case (line, index) => makeDataPoint(line, index, hasRightLabel) }
   }
