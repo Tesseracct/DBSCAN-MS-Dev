@@ -17,7 +17,8 @@ final class TinyArrayBuffer(initialCapacity: Int = 16) {
     if (minCapacity < 0) throw new RuntimeException("Overflow Error when trying to grow TinyArrayBuffer. (Exceeded Int.MaxValue)")
     if (minCapacity > maxArraySize) throw new RuntimeException("New capacity exceeds JVM array limit.")
     if (minCapacity > elems.length) {
-      var newCapacity = elems.length * 2
+      // Use 1.5x growth for larger arrays to reduce memory pressure and fragmentation
+      var newCapacity = if (elems.length < 1024) elems.length * 2 else elems.length + (elems.length >> 1)
       if (newCapacity < 0) newCapacity = maxArraySize
       if (newCapacity < minCapacity) newCapacity = minCapacity
       val newArray = new Array[Int](newCapacity)
@@ -58,4 +59,24 @@ final class TinyArrayBuffer(initialCapacity: Int = 16) {
    * @return The number of elements.
    */
   def length: Int = elemCounter
+
+  /**
+   * Clears all elements from the buffer and releases memory.
+   */
+  def clear(): Unit = {
+    elems = new Array[Int](4)  // Reset to minimal capacity
+    elemCounter = 0
+  }
+
+  /**
+   * Trims the internal array to the exact size needed.
+   * Call this when no more elements will be added to free unused memory.
+   */
+  def trimToSize(): Unit = {
+    if (elemCounter < elems.length) {
+      val newArray = new Array[Int](math.max(elemCounter, 1))
+      if (elemCounter > 0) System.arraycopy(elems, 0, newArray, 0, elemCounter)
+      elems = newArray
+    }
+  }
 }

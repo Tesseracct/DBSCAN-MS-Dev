@@ -21,7 +21,7 @@ object SWNQA {
   }
 
   def execute(points: Array[DataPoint], dimension: Int, epsilon: Float, minPts: Int): Array[Array[Int]] = {
-    val neighbourhoods: Array[TinyArrayBuffer] = Array.fill(points.length)(new TinyArrayBuffer(32))
+    val neighbourhoods: Array[TinyArrayBuffer] = Array.fill(points.length)(new TinyArrayBuffer(16))
     val srLowerBound: Array[Float] = new Array[Float](points.head.dimensions)
     val srUpperBound: Array[Float] = new Array[Float](points.head.dimensions)
 
@@ -43,8 +43,13 @@ object SWNQA {
         u += 1
       }
 
-      // If lPoint has < minPts - 1 neighbours, we can delete its neighbourhood to save memory
-      if (neighbourhoods(l).length < minPts - 1) neighbourhoods(l) = new TinyArrayBuffer()
+      // If lPoint has < minPts - 1 neighbours, it can never become core - clear to save memory
+      if (neighbourhoods(l).length < minPts - 1) {
+        neighbourhoods(l).clear()
+      } else {
+        // Trim to exact size to release unused capacity
+        neighbourhoods(l).trimToSize()
+      }
     }
     neighbourhoods.map(_.toArray)
   }
